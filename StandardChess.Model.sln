@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandardChess.Model", "StandardChess.Model\StandardChess.Model.csproj", "{022B22AB-0005-4DF3-8723-20303DAC5B75}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandardChess.Infrastructure", "StandardChess.Infrastructure\StandardChess.Infrastructure.csproj", "{5DD956C7-0C82-42F6-8BDA-A9748A5BF54C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{022B22AB-0005-4DF3-8723-20303DAC5B75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{022B22AB-0005-4DF3-8723-20303DAC5B75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{022B22AB-0005-4DF3-8723-20303DAC5B75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DD956C7-0C82-42F6-8BDA-A9748A5BF54C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DD956C7-0C82-42F6-8BDA-A9748A5BF54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DD956C7-0C82-42F6-8BDA-A9748A5BF54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DD956C7-0C82-42F6-8BDA-A9748A5BF54C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

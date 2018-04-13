@@ -4,4 +4,16 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
+    <Folder Include="GameModel\" />
+    <Folder Include="MovementModel\" />
+    <Folder Include="PlayerModel\" />
+    <Folder Include="PieceModel\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StandardChess.Infrastructure\StandardChess.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
