@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Player;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
@@ -18,11 +19,6 @@ namespace StandardChess.Model.GameModel
     public class Game
     {
         #region Fields
-
-        /// <summary>
-        /// Determines the state of the game. States include Ongoing, Check, Checkmate
-        /// </summary>
-        public enum GameState { Ongoing, WhiteInCheck, BlackInCheck, WhiteInCheckmate, BlackInCheckmate, Stalemate }
 
         private readonly Func<Type> _pawnPromotionFunc;
 
@@ -822,7 +818,7 @@ namespace StandardChess.Model.GameModel
         /// Is a move legal?
         /// </summary>
         /// <returns></returns>
-        private bool IsMoveLegal(IMovable piece, Move move, IBoardState state)
+        private bool IsMoveLegal(IPiece piece, Move move, IBoardState state)
         {
             piece.GenerateMoves(state);
 
@@ -836,7 +832,7 @@ namespace StandardChess.Model.GameModel
         /// Is a capture legal?
         /// </summary>
         /// <returns></returns>
-        private bool IsCaptureLegal(ICapturable piece, Capture capture, IBoardState state)
+        private bool IsCaptureLegal(IPiece piece, Capture capture, IBoardState state)
         {
             piece.GenerateCaptures(state, ActivePlayerBoardState);
             bool canPieceCapture = piece.CanCaptureAt(capture.EndingPosition);

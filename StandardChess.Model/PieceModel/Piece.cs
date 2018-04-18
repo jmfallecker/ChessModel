@@ -1,13 +1,14 @@
 ﻿using System;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Piece;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 using StandardChess.Model.Interfaces;
 
 namespace StandardChess.Model.PieceModel
 {
-    public abstract class Piece : IMovable, ICapturable
+    public abstract class Piece : IPiece
     {
         #region Properties
 
