@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace StandardChess.Infrastructure.BoardInterfaces
 {
-    public interface IBoardState
+    public interface IBoardState : IEnumerable<ChessPosition>
     {
         bool Add(IBoardState boardState);
         bool Add(ChessPosition position);
@@ -11,6 +12,6 @@ namespace StandardChess.Infrastructure.BoardInterfaces
         bool IsPositionOccupied(ChessPosition position);
         void Remove(IBoardState stateToRemove);
         bool Remove(ChessPosition position);
-        IEnumerable<ChessPosition> OccupiedSquares { get; } 
+        IEnumerable<ChessPosition> OccupiedSquares { get; }
     }
 }

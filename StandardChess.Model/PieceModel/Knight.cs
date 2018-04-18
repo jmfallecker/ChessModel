@@ -1,4 +1,5 @@
 ﻿using StandardChess.Infrastructure;
+using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 
@@ -16,7 +17,7 @@ namespace StandardChess.Model.PieceModel
         /// Generates all legal <see cref="Knight"/> moves
         /// </summary>
         /// <param name="boardState"></param>
-        public override void GenerateMoves(BoardState boardState)
+        public override void GenerateMoves(IBoardState boardState)
         {
             var cpm = new ChessPieceMover();
             MoveSet.Clear();
@@ -38,7 +39,7 @@ namespace StandardChess.Model.PieceModel
         /// </summary>
         /// <param name="boardState"></param>
         /// <param name="owningPlayerBoardState"></param>
-        public override void GenerateCaptures(BoardState boardState, BoardState owningPlayerBoardState)
+        public override void GenerateCaptures(IBoardState boardState, IBoardState owningPlayerBoardState)
         {
             var cpm = new ChessPieceMover();
             CaptureSet.Clear();
@@ -55,92 +56,92 @@ namespace StandardChess.Model.PieceModel
         }
 
         #region Private Methods
-        private void GenerateNorthNorthEastMove(BoardState boardState, ChessPieceMover cpm)
+        private void GenerateNorthNorthEastMove(IBoardState boardState, ChessPieceMover cpm)
         {
             var move = cpm.North(cpm.NorthEast(Location));
 
             if (!boardState.Contains(move))
                 MoveSet.Add(move);
         }
-        private void GenerateNorthNorthWestMove(BoardState boardState, ChessPieceMover cpm)
+        private void GenerateNorthNorthWestMove(IBoardState boardState, ChessPieceMover cpm)
         {
             var move = cpm.North(cpm.NorthWest(Location));
             if (!boardState.Contains(move))
                 MoveSet.Add(move);
         }
-        private void GenerateEastNorthEastMove(BoardState boardState, ChessPieceMover cpm)
+        private void GenerateEastNorthEastMove(IBoardState boardState, ChessPieceMover cpm)
         {
             var move = cpm.East(cpm.NorthEast(Location));
             if (!boardState.Contains(move))
                 MoveSet.Add(move);
         }
-        private void GenerateEastSouthEastMove(BoardState boardState, ChessPieceMover cpm)
+        private void GenerateEastSouthEastMove(IBoardState boardState, ChessPieceMover cpm)
         {
             var move = cpm.East(cpm.SouthEast(Location));
             if (!boardState.Contains(move))
                 MoveSet.Add(move);
         }
-        private void GenerateWestNorthWestMove(BoardState boardState, ChessPieceMover cpm)
+        private void GenerateWestNorthWestMove(IBoardState boardState, ChessPieceMover cpm)
         {
             var move = cpm.West(cpm.NorthWest(Location));
             if (!boardState.Contains(move))
                 MoveSet.Add(move);
         }
-        private void GenerateWestSouthWestMove(BoardState boardState, ChessPieceMover cpm)
+        private void GenerateWestSouthWestMove(IBoardState boardState, ChessPieceMover cpm)
         {
             var move = cpm.West(cpm.SouthWest(Location));
             if (!boardState.Contains(move))
                 MoveSet.Add(move);
         }
-        private void GenerateSouthSouthEastMove(BoardState boardState, ChessPieceMover cpm)
+        private void GenerateSouthSouthEastMove(IBoardState boardState, ChessPieceMover cpm)
         {
             var move = cpm.South(cpm.SouthEast(Location));
             if (!boardState.Contains(move))
                 MoveSet.Add(move);
         }
-        private void GenerateSouthSouthWestMove(BoardState boardState, ChessPieceMover cpm)
+        private void GenerateSouthSouthWestMove(IBoardState boardState, ChessPieceMover cpm)
         {
             var move = cpm.South(cpm.SouthWest(Location));
             if (!boardState.Contains(move))
                 MoveSet.Add(move);
         }
 
-        private void GenerateNorthNorthEastCapture(BoardState enemyBoardState, ChessPieceMover cpm)
+        private void GenerateNorthNorthEastCapture(IBoardState enemyBoardState, ChessPieceMover cpm)
         {
             var capture = cpm.North(cpm.NorthEast(Location));
             AddCaptureToCaptureSet(capture, enemyBoardState);
         }
-        private void GenerateNorthNorthWestCapture(BoardState enemyBoardState, ChessPieceMover cpm)
+        private void GenerateNorthNorthWestCapture(IBoardState enemyBoardState, ChessPieceMover cpm)
         {
             var capture = cpm.North(cpm.NorthWest(Location));
             AddCaptureToCaptureSet(capture, enemyBoardState);
         }
-        private void GenerateSouthSouthEastCapture(BoardState enemyBoardState, ChessPieceMover cpm)
+        private void GenerateSouthSouthEastCapture(IBoardState enemyBoardState, ChessPieceMover cpm)
         {
             var capture = cpm.South(cpm.SouthEast(Location));
             AddCaptureToCaptureSet(capture, enemyBoardState);
         }
-        private void GenerateSouthSouthWestCapture(BoardState enemyBoardState, ChessPieceMover cpm)
+        private void GenerateSouthSouthWestCapture(IBoardState enemyBoardState, ChessPieceMover cpm)
         {
             var capture = cpm.South(cpm.SouthWest(Location));
             AddCaptureToCaptureSet(capture, enemyBoardState);
         }
-        private void GenerateEastNorthEastCapture(BoardState enemyBoardState, ChessPieceMover cpm)
+        private void GenerateEastNorthEastCapture(IBoardState enemyBoardState, ChessPieceMover cpm)
         {
             var capture = cpm.East(cpm.NorthEast(Location));
             AddCaptureToCaptureSet(capture, enemyBoardState);
         }
-        private void GenerateEastSouthEastCapture(BoardState enemyBoardState, ChessPieceMover cpm)
+        private void GenerateEastSouthEastCapture(IBoardState enemyBoardState, ChessPieceMover cpm)
         {
             var capture = cpm.East(cpm.SouthEast(Location));
             AddCaptureToCaptureSet(capture, enemyBoardState);
         }
-        private void GenerateWestNorthWestCapture(BoardState enemyBoardState, ChessPieceMover cpm)
+        private void GenerateWestNorthWestCapture(IBoardState enemyBoardState, ChessPieceMover cpm)
         {
             var capture = cpm.West(cpm.NorthWest(Location));
             AddCaptureToCaptureSet(capture, enemyBoardState);
         }
-        private void GenerateWestSouthWestCapture(BoardState enemyBoardState, ChessPieceMover cpm)
+        private void GenerateWestSouthWestCapture(IBoardState enemyBoardState, ChessPieceMover cpm)
         {
             var capture = cpm.West(cpm.SouthWest(Location));
             AddCaptureToCaptureSet(capture, enemyBoardState);

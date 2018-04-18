@@ -1,12 +1,11 @@
 ﻿using StandardChess.Infrastructure;
-using StandardChess.Model.BoardModel;
-using StandardChess.Model.ChessUtility;
+using StandardChess.Infrastructure.BoardInterfaces;
 
 namespace StandardChess.Model.Interfaces
 {
     public interface ICapturable
     {
-        void GenerateCaptures(BoardState boardState, BoardState owningPlayerPieceBitBoard);
+        void GenerateCaptures(IBoardState boardState, IBoardState owningPlayerPieceBitBoard);
         bool CanCaptureAt(ChessPosition location);
         void CaptureAt(ChessPosition location);
     }

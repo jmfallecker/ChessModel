@@ -1,4 +1,5 @@
 ﻿using StandardChess.Infrastructure;
+using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 
@@ -9,16 +10,16 @@ namespace StandardChess.Model.Interfaces
         ChessPosition Location { get; set; }
         bool HasMoved { get; set; }
         ChessColor Color { get; }
-        BoardState MoveSet { get; }
-        BoardState CaptureSet { get; }
-        BoardState ThreatenSet { get; }
+        IBoardState MoveSet { get; }
+        IBoardState CaptureSet { get; }
+        IBoardState ThreatenSet { get; }
         int Value { get; }
 
-        void GenerateMoves(BoardState boardState);
+        void GenerateMoves(IBoardState boardState);
         bool CanMoveTo(ChessPosition position);
         void MoveTo(ChessPosition position);
 
-        void GenerateCaptures(BoardState boardState, BoardState owningPlayerBoardState);
+        void GenerateCaptures(IBoardState boardState, IBoardState owningPlayerBoardState);
         bool CanCaptureAt(ChessPosition location);
         void CaptureAt(ChessPosition location);
     }

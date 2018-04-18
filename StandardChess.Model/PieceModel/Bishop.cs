@@ -1,4 +1,5 @@
 ﻿using StandardChess.Infrastructure;
+using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 
@@ -16,7 +17,7 @@ namespace StandardChess.Model.PieceModel
         /// Generates all legal <see cref="Bishop"/> moves
         /// </summary>
         /// <param name="boardState"></param>
-        public override void GenerateMoves(BoardState boardState)
+        public override void GenerateMoves(IBoardState boardState)
         {
             var cpm = new ChessPieceMover();
             MoveSet.Clear();
@@ -32,7 +33,7 @@ namespace StandardChess.Model.PieceModel
         /// </summary>
         /// <param name="boardState"></param>
         /// <param name="owningPlayerBoardState"></param>
-        public override void GenerateCaptures(BoardState boardState, BoardState owningPlayerBoardState)
+        public override void GenerateCaptures(IBoardState boardState, IBoardState owningPlayerBoardState)
         {
             var cpm = new ChessPieceMover();
             CaptureSet.Clear();
@@ -44,40 +45,40 @@ namespace StandardChess.Model.PieceModel
             GenerateNorthWestCaptures(owningPlayerBoardState, enemyBoardState, cpm);
         }
 
-        private void GenerateNorthWestCaptures(BoardState owningPlayerBoardState, BoardState enemyBoardState, ChessPieceMover cpm)
+        private void GenerateNorthWestCaptures(IBoardState owningPlayerBoardState, IBoardState enemyBoardState, ChessPieceMover cpm)
         {
             GenerateDirectionalCaptures(owningPlayerBoardState, enemyBoardState, p => cpm.NorthWest(p));
         }
 
-        private void GenerateNorthEastCaptures(BoardState owningPlayerBoardState, BoardState enemyBoardState, ChessPieceMover cpm)
+        private void GenerateNorthEastCaptures(IBoardState owningPlayerBoardState, IBoardState enemyBoardState, ChessPieceMover cpm)
         {
             GenerateDirectionalCaptures(owningPlayerBoardState, enemyBoardState, p => cpm.NorthEast(p));
         }
 
-        private void GenerateSouthEastCaptures(BoardState owningPlayerBoardState, BoardState enemyBoardState, ChessPieceMover cpm)
+        private void GenerateSouthEastCaptures(IBoardState owningPlayerBoardState, IBoardState enemyBoardState, ChessPieceMover cpm)
         {
             GenerateDirectionalCaptures(owningPlayerBoardState, enemyBoardState, p => cpm.SouthEast(p));
         }
 
-        private void GenerateSouthWestCaptures(BoardState owningPlayerBoardState, BoardState enemyBoardState, ChessPieceMover cpm)
+        private void GenerateSouthWestCaptures(IBoardState owningPlayerBoardState, IBoardState enemyBoardState, ChessPieceMover cpm)
         {
             GenerateDirectionalCaptures(owningPlayerBoardState, enemyBoardState, p => cpm.SouthWest(p));
         }
 
         #region Private Methods
-        private void GenerateSouthWestMoves(BoardState boardState, ChessPieceMover cpm)
+        private void GenerateSouthWestMoves(IBoardState boardState, ChessPieceMover cpm)
         {
             GenerateDirectionalMoves(boardState, p => cpm.SouthWest(p));
         }
-        private void GenerateSouthEastMoves(BoardState boardState, ChessPieceMover cpm)
+        private void GenerateSouthEastMoves(IBoardState boardState, ChessPieceMover cpm)
         {
             GenerateDirectionalMoves(boardState, p => cpm.SouthEast(p));
         }
-        private void GenerateNorthWestMoves(BoardState boardState, ChessPieceMover cpm)
+        private void GenerateNorthWestMoves(IBoardState boardState, ChessPieceMover cpm)
         {
             GenerateDirectionalMoves(boardState, p => cpm.NorthWest(p));
         }
-        private void GenerateNorthEastMoves(BoardState boardState, ChessPieceMover cpm)
+        private void GenerateNorthEastMoves(IBoardState boardState, ChessPieceMover cpm)
         {
             GenerateDirectionalMoves(boardState, p => cpm.NorthEast(p));
         }

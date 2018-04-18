@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using StandardChess.Infrastructure;
+using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 using StandardChess.Model.Exceptions;
@@ -81,36 +82,41 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         /// The active player's board state.
         /// </summary>
-        private BoardState ActivePlayerBoardState
+        private IBoardState ActivePlayerBoardState
         {
             get
             {
-                ChessPosition positions = ChessPosition.None;
+                var positions = ChessPosition.None;
 
                 ActivePlayerPieces.ForEach(p =>
                 {
                     positions |= p.Location;
                 });
 
-                return new BoardState(positions);
+                IBoardState activePlayerState = ModelLocator.BoardState;
+                activePlayerState.Add(positions);
+
+                return activePlayerState;
             }
         }
 
         /// <summary>
         /// The inactive player's board state.
         /// </summary>
-        private BoardState InactivePlayerBoardState
+        private IBoardState InactivePlayerBoardState
         {
             get
             {
-                ChessPosition positions = ChessPosition.None;
+                var positions = ChessPosition.None;
 
                 InactivePlayerPieces.ForEach(p =>
                 {
                     positions |= p.Location;
                 });
 
-                return new BoardState(positions);
+                IBoardState inactiveBoardState = ModelLocator.BoardState;
+                inactiveBoardState.Add(positions);
+                return inactiveBoardState;
             }
         }
 
@@ -430,10 +436,8 @@ namespace StandardChess.Model.GameModel
             {
                 StartingPosition = piece.Location
             };
-            var moveSet = new BoardState
-            {
-                piece.MoveSet
-            };
+            IBoardState moveSet = ModelLocator.BoardState;
+            moveSet.Add(piece.MoveSet);
 
             foreach (ChessPosition position in moveSet)
             {
@@ -467,10 +471,8 @@ namespace StandardChess.Model.GameModel
             {
                 StartingPosition = piece.Location
             };
-            var captureSet = new BoardState
-            {
-                piece.CaptureSet
-            };
+            IBoardState captureSet = ModelLocator.BoardState;
+            captureSet.Add(piece.CaptureSet);
 
             foreach (ChessPosition position in captureSet)
             {
@@ -654,7 +656,7 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         /// Determine if the king can move out of check by capturing a piece or simply moving.
         /// </summary>
-        private bool CanKingMoveOrCaptureOutOfCheck(King king, BoardState gameBoardState)
+        private bool CanKingMoveOrCaptureOutOfCheck(King king, IBoardState gameBoardState)
         {
             bool canKingMoveOutOfCheck = false;
             bool canKingCaptureOutOfCheck = false;
@@ -803,7 +805,7 @@ namespace StandardChess.Model.GameModel
         /// <param name="board">Board to reference</param>
         /// <param name="inactivePlayerBoardState">Used to only check opponent's pieces</param>
         /// <returns></returns>
-        private bool IsPositionThreatened(ChessPosition position, Board board, BoardState inactivePlayerBoardState)
+        private bool IsPositionThreatened(ChessPosition position, Board board, IBoardState inactivePlayerBoardState)
         {
             foreach (Piece enemyPiece in InactivePlayerPieces.Where(p => p.Location != ChessPosition.None))
             {
@@ -819,7 +821,7 @@ namespace StandardChess.Model.GameModel
         /// Is a move legal?
         /// </summary>
         /// <returns></returns>
-        private bool IsMoveLegal(IMovable piece, Move move, BoardState state)
+        private bool IsMoveLegal(IMovable piece, Move move, IBoardState state)
         {
             piece.GenerateMoves(state);
 
@@ -833,7 +835,7 @@ namespace StandardChess.Model.GameModel
         /// Is a capture legal?
         /// </summary>
         /// <returns></returns>
-        private bool IsCaptureLegal(ICapturable piece, Capture capture, BoardState state)
+        private bool IsCaptureLegal(ICapturable piece, Capture capture, IBoardState state)
         {
             piece.GenerateCaptures(state, ActivePlayerBoardState);
             bool canPieceCapture = piece.CanCaptureAt(capture.EndingPosition);
@@ -853,7 +855,7 @@ namespace StandardChess.Model.GameModel
             {
                 BlackPieces = new List<Piece>(this.BlackPieces),
                 WhitePieces = new List<Piece>(this.WhitePieces),
-                GameBoard = new Board(this.GameBoard.State, new BoardState()),
+                GameBoard = new Board(this.GameBoard.State, ModelLocator.BoardState),
                 Turn = this.Turn
             };
 

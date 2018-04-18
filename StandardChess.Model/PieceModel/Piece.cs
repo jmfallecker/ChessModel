@@ -1,5 +1,6 @@
 ﻿using System;
 using StandardChess.Infrastructure;
+using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 using StandardChess.Model.Interfaces;
@@ -16,11 +17,11 @@ namespace StandardChess.Model.PieceModel
 
         public ChessColor Color { get; }
 
-        public BoardState MoveSet { get; protected set; }
+        public IBoardState MoveSet { get; protected set; }
 
-        public BoardState CaptureSet { get; protected set; }
+        public IBoardState CaptureSet { get; protected set; }
 
-        public BoardState ThreatenSet { get; protected set; }
+        public IBoardState ThreatenSet { get; protected set; }
 
         public int Value { get; protected set; }
 
@@ -32,9 +33,9 @@ namespace StandardChess.Model.PieceModel
         {
             Location = initialPosition;
             Color = color;
-            MoveSet = new BoardState();
-            CaptureSet = new BoardState();
-            ThreatenSet = new BoardState();
+            MoveSet = ModelLocator.BoardState;
+            CaptureSet = ModelLocator.BoardState;
+            ThreatenSet = ModelLocator.BoardState;
         }
 
         #endregion
@@ -45,21 +46,21 @@ namespace StandardChess.Model.PieceModel
         /// This function generates all legal moves, but not all legal captures.
         /// </summary>
         /// <param name="boardState"></param>
-        public abstract void GenerateMoves(BoardState boardState);
+        public abstract void GenerateMoves(IBoardState boardState);
 
         /// <summary>
         /// This function simply generates all potential capture locations.
         /// </summary>
         /// <param name="boardState"></param>
         /// <param name="owningPlayerBoardState"></param>
-        public abstract void GenerateCaptures(BoardState boardState, BoardState owningPlayerBoardState);
+        public abstract void GenerateCaptures(IBoardState boardState, IBoardState owningPlayerBoardState);
 
         #endregion
 
         #region Public Methods
 
         /// <summary>
-        /// Ensure that <see cref="GenerateMoves(BoardState)"/> is called before this.
+        /// Ensure that <see cref="GenerateMoves(IBoardState)"/> is called before this.
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
@@ -79,7 +80,7 @@ namespace StandardChess.Model.PieceModel
         }
 
         /// <summary>
-        /// Ensure that <see cref="GenerateCaptures(BoardState, BoardState)"/> is called before this.
+        /// Ensure that <see cref="GenerateCaptures(IBoardState, IBoardState)"/> is called before this.
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
@@ -99,7 +100,7 @@ namespace StandardChess.Model.PieceModel
         }
 
         /// <summary>
-        /// Ensure that <see cref="GenerateThreatened(BoardState, BoardState)"/> is called before this.
+        /// Ensure that <see cref="GenerateThreatened(IBoardState, IBoardState)"/> is called before this.
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
@@ -113,7 +114,7 @@ namespace StandardChess.Model.PieceModel
         /// </summary>
         /// <param name="boardState">Full board state</param>
         /// <param name="owningPlayerBoardState">Used to ignore this other pieces of the same color.</param>
-        public virtual void GenerateThreatened(BoardState boardState, BoardState owningPlayerBoardState)
+        public virtual void GenerateThreatened(IBoardState boardState, IBoardState owningPlayerBoardState)
         {
             ThreatenSet.Clear();
 
@@ -134,9 +135,9 @@ namespace StandardChess.Model.PieceModel
         /// <param name="boardState"></param>
         /// <param name="owningPlayerBoardState"></param>
         /// <returns></returns>
-        protected BoardState CreateEnemyBoardState(BoardState boardState, BoardState owningPlayerBoardState)
+        protected IBoardState CreateEnemyBoardState(IBoardState boardState, IBoardState owningPlayerBoardState)
         {
-            var state = new BoardState();
+            IBoardState state = ModelLocator.BoardState;
             state.Add(boardState);
             state.Remove(owningPlayerBoardState);
 
@@ -148,7 +149,7 @@ namespace StandardChess.Model.PieceModel
         /// </summary>
         /// <param name="capturePosition"></param>
         /// <param name="enemyBoardState"></param>
-        protected void AddCaptureToCaptureSet(ChessPosition capturePosition, BoardState enemyBoardState)
+        protected void AddCaptureToCaptureSet(ChessPosition capturePosition, IBoardState enemyBoardState)
         {
             if (enemyBoardState.Contains(capturePosition))
             {
@@ -162,7 +163,7 @@ namespace StandardChess.Model.PieceModel
         /// <param name="owningPlayerBoardState"></param>
         /// <param name="enemyBoardState"></param>
         /// <param name="directionFunction"></param>
-        protected void GenerateDirectionalCaptures(BoardState owningPlayerBoardState, BoardState enemyBoardState, Func<ChessPosition, ChessPosition> directionFunction)
+        protected void GenerateDirectionalCaptures(IBoardState owningPlayerBoardState, IBoardState enemyBoardState, Func<ChessPosition, ChessPosition> directionFunction)
         {
             var capture = ChessPosition.None;
 
@@ -179,9 +180,9 @@ namespace StandardChess.Model.PieceModel
             AddCaptureToCaptureSet(capture, enemyBoardState);
         }
 
-        protected void GenerateDirectionalMoves(BoardState boardState, Func<ChessPosition, ChessPosition> directionFunction)
+        protected void GenerateDirectionalMoves(IBoardState boardState, Func<ChessPosition, ChessPosition> directionFunction)
         {
-            var nextMove = directionFunction(Location);
+            ChessPosition nextMove = directionFunction(Location);
 
             while (!boardState.Contains(nextMove))
             {

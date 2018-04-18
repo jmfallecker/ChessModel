@@ -8,7 +8,7 @@ using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Model.BoardModel
 {
-    public class BoardState : IBoardState, IEnumerable<ChessPosition>
+    public class BoardState : IBoardState
     {
         #region Fields
 
@@ -34,14 +34,6 @@ namespace StandardChess.Model.BoardModel
         {
             _bitboard = new Bitboard();
             _occupiedSquares = new SortedSet<ChessPosition>();
-        }
-
-        public BoardState(ChessPosition position)
-        {
-            _bitboard = new Bitboard();
-            _occupiedSquares = new SortedSet<ChessPosition>();
-
-            Add(position);
         }
 
         #endregion
@@ -118,9 +110,8 @@ namespace StandardChess.Model.BoardModel
 
         public override bool Equals(object obj)
         {
-            BoardState boardState = (BoardState)obj;
-            return _occupiedSquares.SequenceEqual(boardState._occupiedSquares) &&
-                   _bitboard.State == boardState._bitboard.State;
+            var boardState = (IBoardState)obj;
+            return OccupiedSquares.SequenceEqual(boardState.OccupiedSquares);
         }
 
         public override int GetHashCode()

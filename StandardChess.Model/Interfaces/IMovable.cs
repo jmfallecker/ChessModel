@@ -1,12 +1,11 @@
 ﻿using StandardChess.Infrastructure;
-using StandardChess.Model.BoardModel;
-using StandardChess.Model.ChessUtility;
+using StandardChess.Infrastructure.BoardInterfaces;
 
 namespace StandardChess.Model.Interfaces
 {
     public interface IMovable
     {
-        void GenerateMoves(BoardState boardState);
+        void GenerateMoves(IBoardState boardState);
         bool CanMoveTo(ChessPosition position);
         void MoveTo(ChessPosition position);
     }

@@ -1,4 +1,5 @@
 ﻿using StandardChess.Infrastructure;
+using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Model.BoardModel
@@ -7,7 +8,7 @@ namespace StandardChess.Model.BoardModel
     {
         #region Properties
 
-        public BoardState State { get; protected set; }
+        public IBoardState State { get; protected set; }
 
         #endregion
 
@@ -18,7 +19,7 @@ namespace StandardChess.Model.BoardModel
         /// </summary>
         public Board()
         {
-            State = new BoardState();
+            State = ModelLocator.BoardState;
 
             State.Add(ChessPosition.WhiteStart);
             State.Add(ChessPosition.BlackStart);
@@ -29,9 +30,9 @@ namespace StandardChess.Model.BoardModel
         /// </summary>
         /// <param name="whitePlayerPieces"></param>
         /// <param name="blackPlayerPieces"></param>
-        public Board(BoardState whitePlayerPieces, BoardState blackPlayerPieces)
+        public Board(IBoardState whitePlayerPieces, IBoardState blackPlayerPieces)
         {
-            State = new BoardState();
+            State = ModelLocator.BoardState;
             State.Add(whitePlayerPieces);
             State.Add(blackPlayerPieces);
         }

@@ -1,4 +1,5 @@
 ﻿using StandardChess.Infrastructure;
+using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 
@@ -21,7 +22,7 @@ namespace StandardChess.Model.PieceModel
         /// Generates all legal <see cref="Pawn"/> moves
         /// </summary>
         /// <param name="boardState"></param>
-        public override void GenerateMoves(BoardState boardState)
+        public override void GenerateMoves(IBoardState boardState)
         {
             var cpm = new ChessPieceMover();
             MoveSet.Clear();
@@ -49,7 +50,7 @@ namespace StandardChess.Model.PieceModel
         /// </summary>
         /// <param name="boardState">Current board state</param>
         /// <param name="owningPlayerBoardState">State of all of the moving color's pieces</param>
-        public override void GenerateCaptures(BoardState boardState, BoardState owningPlayerBoardState)
+        public override void GenerateCaptures(IBoardState boardState, IBoardState owningPlayerBoardState)
         {
             var cpm = new ChessPieceMover();
             CaptureSet.Clear();
@@ -60,7 +61,7 @@ namespace StandardChess.Model.PieceModel
             CaptureSet.Add(GenerateCaptureWest(enemyPieces, cpm));
         }
 
-        public override void GenerateThreatened(BoardState boardState, BoardState owningPlayerBoardState)
+        public override void GenerateThreatened(IBoardState boardState, IBoardState owningPlayerBoardState)
         {
             var cpm = new ChessPieceMover();
 
@@ -101,7 +102,7 @@ namespace StandardChess.Model.PieceModel
 
         #region Private Methods
 
-        private ChessPosition GenerateCaptureEast(BoardState enemyPieces, ChessPieceMover cpm)
+        private ChessPosition GenerateCaptureEast(IBoardState enemyPieces, ChessPieceMover cpm)
         {
             var potentialCapture = (Color == ChessColor.White) ? cpm.NorthEast(Location) : cpm.SouthEast(Location);
             var isPieceAtCaptureLocation = enemyPieces.Contains(potentialCapture);
@@ -109,7 +110,7 @@ namespace StandardChess.Model.PieceModel
             return isPieceAtCaptureLocation ? potentialCapture : ChessPosition.None;
         }
 
-        private ChessPosition GenerateCaptureWest(BoardState enemyPieces, ChessPieceMover cpm)
+        private ChessPosition GenerateCaptureWest(IBoardState enemyPieces, ChessPieceMover cpm)
         {
             var potentialCapture = (Color == ChessColor.White) ? cpm.NorthWest(Location) : cpm.SouthWest(Location);
             var isPieceAtCaptureLocation = enemyPieces.Contains(potentialCapture);

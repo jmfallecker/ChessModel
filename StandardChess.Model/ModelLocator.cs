@@ -1,10 +1,19 @@
 ﻿using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Model.BoardModel;
+using Unity;
 
 namespace StandardChess.Model
 {
-    internal class ModelLocator
+    internal static class ModelLocator
     {
-        //Create an IoC container here.
+        private static readonly UnityContainer Container;
+
+        static ModelLocator()
+        {
+            Container = new UnityContainer();
+            Container.RegisterType<IBoardState, BoardState>();
+        }
+
+        public static IBoardState BoardState => Container.Resolve<IBoardState>();
     }
 }
