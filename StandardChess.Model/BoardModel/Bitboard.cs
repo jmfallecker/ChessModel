@@ -1,16 +1,12 @@
 ﻿using StandardChess.Infrastructure;
+using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Model.BoardModel
 {
-    public class Bitboard
+    public class Bitboard : IBitboard
     {
         public ulong State { get; private set; }
-
-        public Bitboard()
-        {
-            State = 0x0;
-        }
 
         public bool IsLocationOccupied(ChessPosition position)
         {

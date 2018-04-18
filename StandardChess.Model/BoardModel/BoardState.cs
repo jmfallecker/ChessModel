@@ -21,7 +21,7 @@ namespace StandardChess.Model.BoardModel
         /// <summary>
         /// Used to keep track of ulong positions of boardstate with bitwise operators.
         /// </summary>
-        private readonly Bitboard _bitboard;
+        private readonly IBitboard _bitboard;
 
         #endregion
 
@@ -32,7 +32,7 @@ namespace StandardChess.Model.BoardModel
         /// </summary>
         public BoardState()
         {
-            _bitboard = new Bitboard();
+            _bitboard = ModelLocator.Bitboard;
             _occupiedSquares = new SortedSet<ChessPosition>();
         }
 
@@ -116,11 +116,11 @@ namespace StandardChess.Model.BoardModel
 
         public override int GetHashCode()
         {
-            int result = 17;
+            const int RESULT = 17;
             int occupiedSquaresHash = _occupiedSquares == null ? 0 : EqualityComparer<SortedSet<ChessPosition>>.Default.GetHashCode(_occupiedSquares);
-            int bitBoardHash = _bitboard == null ? 0 : EqualityComparer<Bitboard>.Default.GetHashCode(_bitboard);
+            int bitBoardHash = _bitboard == null ? 0 : EqualityComparer<IBitboard>.Default.GetHashCode(_bitboard);
 
-            return 37 * result + occupiedSquaresHash + bitBoardHash;
+            return 37 * RESULT + occupiedSquaresHash + bitBoardHash;
         }
 
         #endregion
