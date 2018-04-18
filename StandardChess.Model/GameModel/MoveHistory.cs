@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StandardChess.Infrastructure.Movement;
 using StandardChess.Model.ChessUtility;
 using StandardChess.Model.MovementModel;
 using StandardChess.Model.PieceModel;
@@ -25,28 +26,28 @@ namespace StandardChess.Model.GameModel
             { (typeof(Pawn), ChessColor.Black), "\u265F" }
         };
 
-        public List<(Move move, Type pieceType)> Moves { get; }
+        public List<(IMovable movable, Type pieceType)> Moves { get; }
         public List<string> MovesByNotation { get; }
         public int Count => Moves.Count;
 
         public MoveHistory()
         {
-            Moves = new List<(Move, Type)>();
+            Moves = new List<(IMovable, Type)>();
             MovesByNotation = new List<string>();
         }
 
-        public void Add(Piece piece, Move move)
+        public void Add(Piece piece, IMovable movable)
         {
-            Moves.Add((move, piece.GetType()));
+            Moves.Add((movable, piece.GetType()));
 
             if (piece.Color == ChessColor.White)
             {
-                MovesByNotation.Add(CreateAlgebraicNotation(piece, move));
+                MovesByNotation.Add(CreateAlgebraicNotation(piece, movable));
             }
             else
             {
                 string incompleteTurn = MovesByNotation.Last();
-                incompleteTurn += " " + CreateAlgebraicNotation(piece, move);
+                incompleteTurn += " " + CreateAlgebraicNotation(piece, movable);
             }
         }
 
@@ -55,9 +56,9 @@ namespace StandardChess.Model.GameModel
             
         }
                 
-        private static string CreateAlgebraicNotation(Piece piece, Move move)
+        private static string CreateAlgebraicNotation(Piece piece, IMovable move)
         {
-            return GetChessPieceUnicode(piece) + move.EndingPosition.ToString();
+            return GetChessPieceUnicode(piece) + move.EndingPosition;
         }        
 
         private static string GetChessPieceUnicode(Piece piece)
@@ -68,14 +69,14 @@ namespace StandardChess.Model.GameModel
         public bool WasPieceCapturedInLastFiftyMoves()
         {
             if (Moves.Count == 1)
-                return Moves.First().move is Capture;
+                return Moves.First().movable is ICapture;
 
             int mostRecentMoveIndex = Moves.Count - 1;
             int indexToEndAt = Moves.Count < 50 ? 0 : mostRecentMoveIndex - 50;
 
             for (int i = mostRecentMoveIndex; i > indexToEndAt; i--)
             {
-                if (Moves[i].move is Capture)
+                if (Moves[i].movable is ICapture)
                     return true;
             }
 
