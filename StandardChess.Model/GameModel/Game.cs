@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Player;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 using StandardChess.Model.Exceptions;
@@ -52,12 +53,12 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         /// White player.
         /// </summary>
-        public Player WhitePlayer { get; protected set; }
+        public IPlayer WhitePlayer { get; protected set; }
 
         /// <summary>
         /// Black player.
         /// </summary>
-        public Player BlackPlayer { get; protected set; }
+        public IPlayer BlackPlayer { get; protected set; }
 
         /// <summary>
         /// Score of white player.
@@ -123,7 +124,7 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         /// The active player.
         /// </summary>
-        private Player ActivePlayer => (ActivePlayerColor == ChessColor.White) ? WhitePlayer : BlackPlayer;
+        private IPlayer ActivePlayer => (ActivePlayerColor == ChessColor.White) ? WhitePlayer : BlackPlayer;
 
         /// <summary>
         /// The active player's pieces.
@@ -182,8 +183,8 @@ namespace StandardChess.Model.GameModel
             WhitePieces = CreatePieces(ChessColor.White);
             BlackPieces = CreatePieces(ChessColor.Black);
 
-            WhitePlayer = new Player();
-            BlackPlayer = new Player();
+            WhitePlayer = ModelLocator.Player;
+            BlackPlayer = ModelLocator.Player;
 
             MoveHistory = new MoveHistory();
 
@@ -714,7 +715,7 @@ namespace StandardChess.Model.GameModel
             if (gameBoard.IsPositionOccupied(capture.EndingPosition))
                 return false;
 
-            var cpm = new ChessPieceMover();
+            var cpm = ModelLocator.ChessPieceMover;
             // get the position of the piece we're trying to capture via En Passant
             ChessPosition locationOfPotentiallyCapturedPiece = capturingPiece.Color == ChessColor.White ?
                 cpm.South(capture.EndingPosition) :
@@ -884,7 +885,7 @@ namespace StandardChess.Model.GameModel
         /// <returns></returns>
         private int ExecuteEnPassantCapture(Capture capture)
         {
-            var cpm = new ChessPieceMover();
+            var cpm = ModelLocator.ChessPieceMover;
             Piece movingPiece = GetPiece(ActivePlayerColor, capture.StartingPosition);
 
             ChessPosition locationOfLostPiece = movingPiece.Color == ChessColor.White ?

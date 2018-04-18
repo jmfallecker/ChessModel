@@ -1,6 +1,8 @@
-﻿namespace StandardChess.Model.PlayerModel
+﻿using StandardChess.Infrastructure.Player;
+
+namespace StandardChess.Model.PlayerModel
 {
-    public class Player
+    public class Player : IPlayer
     {
         #region Properties
 
