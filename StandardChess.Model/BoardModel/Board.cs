@@ -1,10 +1,9 @@
 ﻿using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
-using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Model.BoardModel
 {
-    public class Board
+    public class Board : IBoard
     {
         #region Properties
 
@@ -23,18 +22,6 @@ namespace StandardChess.Model.BoardModel
 
             State.Add(ChessPosition.WhiteStart);
             State.Add(ChessPosition.BlackStart);
-        }
-
-        /// <summary>
-        /// Creates a board with passed in player boardstates.
-        /// </summary>
-        /// <param name="whitePlayerPieces"></param>
-        /// <param name="blackPlayerPieces"></param>
-        public Board(IBoardState whitePlayerPieces, IBoardState blackPlayerPieces)
-        {
-            State = ModelLocator.BoardState;
-            State.Add(whitePlayerPieces);
-            State.Add(blackPlayerPieces);
         }
 
         #endregion

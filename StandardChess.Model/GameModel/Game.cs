@@ -37,7 +37,7 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         /// The board.
         /// </summary>
-        public Board GameBoard { get; private set; }
+        public IBoard GameBoard { get; private set; }
 
         /// <summary>
         /// White player's pieces.
@@ -177,7 +177,7 @@ namespace StandardChess.Model.GameModel
         /// <param name="pawnPromotionFunc">A function to allow the user to select the type of piece to promote a pawn to upon promotion.</param>
         public Game(Func<Type> pawnPromotionFunc)
         {
-            GameBoard = new Board();
+            GameBoard = ModelLocator.Board;
 
             WhitePieces = CreatePieces(ChessColor.White);
             BlackPieces = CreatePieces(ChessColor.Black);
@@ -696,7 +696,7 @@ namespace StandardChess.Model.GameModel
         /// <param name="capture"></param>
         /// <param name="gameBoard"></param>
         /// <returns></returns>
-        private bool IsCaptureLegalEnPassant(Piece capturingPiece, Capture capture, Board gameBoard)
+        private bool IsCaptureLegalEnPassant(Piece capturingPiece, Capture capture, IBoard gameBoard)
         {
             // 1.) only Pawns can capture via En Passant
             if (!(capturingPiece is Pawn))
@@ -734,7 +734,7 @@ namespace StandardChess.Model.GameModel
         /// <param name="move"></param>
         /// <param name="board"></param>
         /// <returns></returns>
-        private bool IsCastleLegal(Piece piece, Move move, Board board)
+        private bool IsCastleLegal(Piece piece, Move move, IBoard board)
         {
             // 1.) has the King moved already?
             if (!(piece is King) || piece.HasMoved)
@@ -747,7 +747,7 @@ namespace StandardChess.Model.GameModel
             if (rook == null || rook.HasMoved)
                 return false;
 
-            List<ChessPosition> piecesBetweenRookAndKing = GetPositionsBetweenCastle(king, rook, GameBoard);
+            List<ChessPosition> piecesBetweenRookAndKing = GetPositionsBetweenCastle(king, rook);
             // 3.) are there pieces standing between the King and Rook?
             foreach (ChessPosition location in piecesBetweenRookAndKing)
             {
@@ -805,7 +805,7 @@ namespace StandardChess.Model.GameModel
         /// <param name="board">Board to reference</param>
         /// <param name="inactivePlayerBoardState">Used to only check opponent's pieces</param>
         /// <returns></returns>
-        private bool IsPositionThreatened(ChessPosition position, Board board, IBoardState inactivePlayerBoardState)
+        private bool IsPositionThreatened(ChessPosition position, IBoard board, IBoardState inactivePlayerBoardState)
         {
             foreach (Piece enemyPiece in InactivePlayerPieces.Where(p => p.Location != ChessPosition.None))
             {
@@ -851,11 +851,17 @@ namespace StandardChess.Model.GameModel
         /// <returns></returns>
         private bool DoesPotentialMoveLeaveKingInCheck(Move potentialMove)
         {
+            IBoard board = ModelLocator.Board;
+            foreach (ChessPosition chessPosition in GameBoard.State)
+            {
+                board.Add(chessPosition);
+            }
+
             var game = new Game(() => typeof(Queen))
             {
                 BlackPieces = new List<Piece>(this.BlackPieces),
                 WhitePieces = new List<Piece>(this.WhitePieces),
-                GameBoard = new Board(this.GameBoard.State, ModelLocator.BoardState),
+                GameBoard = board,
                 Turn = this.Turn
             };
 
@@ -1075,7 +1081,7 @@ namespace StandardChess.Model.GameModel
         /// <param name="rook"></param>
         /// <param name="board"></param>
         /// <returns></returns>
-        private static List<ChessPosition> GetPositionsBetweenCastle(Piece king, Piece rook, Board board)
+        private static List<ChessPosition> GetPositionsBetweenCastle(Piece king, Piece rook)
         {
             var locationsInBetween = new List<ChessPosition>();
 

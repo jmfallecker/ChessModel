@@ -12,8 +12,10 @@ namespace StandardChess.Model
         {
             Container = new UnityContainer();
             Container.RegisterType<IBoardState, BoardState>();
+            Container.RegisterType<IBoard, Board>();
         }
 
         public static IBoardState BoardState => Container.Resolve<IBoardState>();
+        public static IBoard Board => Container.Resolve<IBoard>();
     }
 }
