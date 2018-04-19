@@ -1,12 +1,13 @@
 ﻿using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Utility;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Model.PieceModel
 {
-    public class Rook : Piece
+    public class Rook : Piece, IRook
     {
         public Rook(ChessPosition initialPosition, ChessColor color)
             : base(initialPosition, color)

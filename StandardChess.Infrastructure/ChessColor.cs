@@ -1,4 +1,4 @@
-﻿namespace StandardChess.Model.ChessUtility
+﻿namespace StandardChess.Infrastructure
 {
     public enum ChessColor { Black, White }
 }

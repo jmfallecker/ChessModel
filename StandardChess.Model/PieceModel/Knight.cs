@@ -1,12 +1,13 @@
 ﻿using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Utility;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Model.PieceModel
 {
-    public class Knight : Piece
+    public class Knight : Piece, IKnight
     {
         public Knight(ChessPosition initialPosition, ChessColor color)
             : base(initialPosition, color)
@@ -15,7 +16,7 @@ namespace StandardChess.Model.PieceModel
         }
 
         /// <summary>
-        /// Generates all legal <see cref="Knight"/> moves
+        /// Generates all legal <see cref="IKnight"/> moves
         /// </summary>
         /// <param name="boardState"></param>
         public override void GenerateMoves(IBoardState boardState)
@@ -36,7 +37,7 @@ namespace StandardChess.Model.PieceModel
             GenerateWestSouthWestMove(boardState, cpm);
         }
         /// <summary>
-        /// Generates all legal <see cref="Knight"/> captures
+        /// Generates all legal <see cref="IKnight"/> captures
         /// </summary>
         /// <param name="boardState"></param>
         /// <param name="owningPlayerBoardState"></param>

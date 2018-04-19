@@ -1,10 +1,12 @@
 ﻿using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Infrastructure.Movement;
+using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Player;
 using StandardChess.Infrastructure.Utility;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 using StandardChess.Model.MovementModel;
+using StandardChess.Model.PieceModel;
 using StandardChess.Model.PlayerModel;
 using Unity;
 
@@ -24,6 +26,7 @@ namespace StandardChess.Model
             Container.RegisterType<IPlayer, Player>();
             Container.RegisterType<IMove, Move>();
             Container.RegisterType<ICapture, Capture>();
+            Container.RegisterType<IChessPieceFactory, ChessPieceFactory>();
         }
 
         public static IBoardState BoardState => Container.Resolve<IBoardState>();
@@ -33,5 +36,6 @@ namespace StandardChess.Model
         public static IPlayer Player => Container.Resolve<IPlayer>();
         public static IMove Move => Container.Resolve<IMove>();
         public static ICapture Capture => Container.Resolve<ICapture>();
+        public static IChessPieceFactory ChessPieceFactory => Container.Resolve<IChessPieceFactory>();
     }
 }

@@ -1,12 +1,13 @@
 ﻿using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Utility;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Model.PieceModel
 {
-    public class Queen : Piece
+    public class Queen : Piece, IQueen
     {
         public Queen(ChessPosition initialPosition, ChessColor color)
             : base(initialPosition, color)
@@ -15,7 +16,7 @@ namespace StandardChess.Model.PieceModel
         }
 
         /// <summary>
-        /// Generates all legal <see cref="Queen"/> moves
+        /// Generates all legal <see cref="IQueen"/> moves
         /// </summary>
         /// <param name="boardState"></param>
         public override void GenerateMoves(IBoardState boardState)
@@ -75,7 +76,7 @@ namespace StandardChess.Model.PieceModel
         }
 
         /// <summary>
-        /// Generates all legal <see cref="Queen"/> captures
+        /// Generates all legal <see cref="IQueen"/> captures
         /// </summary>
         /// <param name="boardState"></param>
         /// <param name="owningPlayerBoardState"></param>

@@ -1,5 +1,4 @@
 ﻿using StandardChess.Infrastructure.BoardInterfaces;
-using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Infrastructure.Piece
 {

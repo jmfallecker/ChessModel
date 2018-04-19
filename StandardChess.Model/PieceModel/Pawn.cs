@@ -1,12 +1,13 @@
 ﻿using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Utility;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Model.PieceModel
 {
-    public class Pawn : Piece
+    public class Pawn : Piece, IPawn
     {
         public bool IsCapturableByEnPassant { get; protected set; }
         public bool IsPromotable { get; protected set; }
@@ -20,7 +21,7 @@ namespace StandardChess.Model.PieceModel
         }
 
         /// <summary>
-        /// Generates all legal <see cref="Pawn"/> moves
+        /// Generates all legal <see cref="IPawn"/> moves
         /// </summary>
         /// <param name="boardState"></param>
         public override void GenerateMoves(IBoardState boardState)
@@ -47,7 +48,7 @@ namespace StandardChess.Model.PieceModel
         }
 
         /// <summary>
-        /// Generates all legal <see cref="Pawn"/> captures
+        /// Generates all legal <see cref="IPawn"/> captures
         /// </summary>
         /// <param name="boardState">Current board state</param>
         /// <param name="owningPlayerBoardState">State of all of the moving color's pieces</param>

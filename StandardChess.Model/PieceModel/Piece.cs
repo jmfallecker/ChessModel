@@ -4,7 +4,6 @@ using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
-using StandardChess.Model.Interfaces;
 
 namespace StandardChess.Model.PieceModel
 {
