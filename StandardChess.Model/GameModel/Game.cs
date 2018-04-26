@@ -753,7 +753,7 @@ namespace StandardChess.Model.GameModel
             if (rook == null || rook.HasMoved)
                 return false;
 
-            List<ChessPosition> piecesBetweenRookAndKing = GetPositionsBetweenCastle(king, rook);
+            List<ChessPosition> piecesBetweenRookAndKing = GetPositionsBetweenCastle((IKing)king, rook);
             // 3.) are there pieces standing between the King and Rook?
             foreach (ChessPosition location in piecesBetweenRookAndKing)
             {
@@ -1088,7 +1088,7 @@ namespace StandardChess.Model.GameModel
         /// <param name="rook"></param>
         /// <param name="board"></param>
         /// <returns></returns>
-        private static List<ChessPosition> GetPositionsBetweenCastle(IPiece king, IPiece rook)
+        private static List<ChessPosition> GetPositionsBetweenCastle(IKing king, IRook rook)
         {
             var locationsInBetween = new List<ChessPosition>();
 
