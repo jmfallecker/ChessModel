@@ -9,6 +9,7 @@ using StandardChess.Model.MovementModel;
 using StandardChess.Model.PieceModel;
 using StandardChess.Model.PlayerModel;
 using Unity;
+using Unity.Lifetime;
 
 namespace StandardChess.Model
 {
@@ -19,13 +20,13 @@ namespace StandardChess.Model
         static ModelLocator()
         {
             Container = new UnityContainer();
-            Container.RegisterType<IBoardState, BoardState>();
-            Container.RegisterType<IBoard, Board>();
-            Container.RegisterType<IBitboard, Bitboard>();
+            Container.RegisterType<IBoardState, BoardState>(new PerResolveLifetimeManager());
+            Container.RegisterType<IBoard, Board>(new PerResolveLifetimeManager());
+            Container.RegisterType<IBitboard, Bitboard>(new PerResolveLifetimeManager());
             Container.RegisterType<IChessPieceMover, ChessPieceMover>();
-            Container.RegisterType<IPlayer, Player>();
-            Container.RegisterType<IMove, Move>();
-            Container.RegisterType<ICapture, Capture>();
+            Container.RegisterType<IPlayer, Player>(new PerResolveLifetimeManager());
+            Container.RegisterType<IMove, Move>(new PerResolveLifetimeManager());
+            Container.RegisterType<ICapture, Capture>(new PerResolveLifetimeManager());
             Container.RegisterType<IChessPieceFactory, ChessPieceFactory>();
         }
 
