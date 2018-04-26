@@ -15,7 +15,7 @@ namespace StandardChess.Model.ChessUtility
         /// <summary>
         /// The representation of all files A-G excluding file H.
         /// </summary>
-        public const ulong NOT_H_FILE = 0x7f7f7f7f7f7f7f7f;
+        private const ulong NOT_H_FILE = 0x7f7f7f7f7f7f7f7f;
         #endregion
 
         #region Public Methods
