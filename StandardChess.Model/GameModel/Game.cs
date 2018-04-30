@@ -413,8 +413,8 @@ namespace StandardChess.Model.GameModel
         {
             if (MoveHistory.Count >= 50)
             {
-                bool wasPieceCapturedInLastFiftyMoves = MoveHistory.WasPieceCapturedInLastFiftyMoves();
-                bool wasPawnMovedInLastFiftyMoves = MoveHistory.WasPawnMovedInLastFiftyMoves();
+                bool wasPieceCapturedInLastFiftyMoves = MoveHistory.WasPieceCapturedInLastFiftyMoves;
+                bool wasPawnMovedInLastFiftyMoves = MoveHistory.WasPawnMovedInLastFiftyMoves;
 
                 if (!wasPawnMovedInLastFiftyMoves && !wasPieceCapturedInLastFiftyMoves)
                     return true;

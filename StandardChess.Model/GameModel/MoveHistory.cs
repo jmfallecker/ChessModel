@@ -41,65 +41,80 @@ namespace StandardChess.Model.GameModel
         public void Add(IPiece piece, IMovable movable)
         {
             Moves.Add((movable, piece.GetType()));
+            AddNotation(piece, movable);
+        }
 
+        private void AddNotation(IPiece piece, IMovable movable)
+        {
             if (piece.Color == ChessColor.White)
             {
-                MovesByNotation.Add(CreateAlgebraicNotation(piece, movable));
+                int turnNumber = MovesByNotation.Count + 1;
+                MovesByNotation.Add($"{turnNumber}. {CreateAlgebraicNotation(piece, movable)}");
             }
             else
             {
                 string incompleteTurn = MovesByNotation.Last();
-                incompleteTurn += " " + CreateAlgebraicNotation(piece, movable);
+                string completeTurn = incompleteTurn + " " + CreateAlgebraicNotation(piece, movable);
+
+                int indexOfIncompleteTurn = MovesByNotation.IndexOf(incompleteTurn);
+                MovesByNotation[indexOfIncompleteTurn] = completeTurn;
             }
         }
 
-        public void RemoveLast()
-        {
-            
-        }
-                
         private static string CreateAlgebraicNotation(IPiece piece, IMovable move)
         {
-            return GetChessPieceUnicode(piece) + move.EndingPosition;
-        }        
+            string notation = GetChessPieceUnicode(piece);
+
+            if (move is ICapture)
+                notation += "x";
+
+
+            return notation + move.EndingPosition;
+        }
 
         private static string GetChessPieceUnicode(IPiece piece)
         {
             return UnicodeCharacters[(piece.GetType(), piece.Color)];
         }
 
-        public bool WasPieceCapturedInLastFiftyMoves()
+        public bool WasPieceCapturedInLastFiftyMoves
         {
-            if (Moves.Count == 1)
-                return Moves.First().movable is ICapture;
-
-            int mostRecentMoveIndex = Moves.Count - 1;
-            int indexToEndAt = Moves.Count < 50 ? 0 : mostRecentMoveIndex - 50;
-
-            for (int i = mostRecentMoveIndex; i > indexToEndAt; i--)
+            get
             {
-                if (Moves[i].movable is ICapture)
-                    return true;
-            }
+                if (Moves.Count == 1)
+                    return Moves.First().movable is ICapture;
 
-            return false;
+                int mostRecentMoveIndex = Moves.Count - 1;
+                int indexToEndAt = Moves.Count < 50 ? 0 : mostRecentMoveIndex - 50;
+
+                for (int i = mostRecentMoveIndex; i > indexToEndAt; i--)
+                {
+                    if (Moves[i].movable is ICapture)
+                        return true;
+                }
+
+                return false;
+            }
         }
 
-        public bool WasPawnMovedInLastFiftyMoves()
+        public bool WasPawnMovedInLastFiftyMoves
         {
-            if (Moves.Count == 1)
-                return Moves.First().pieceType == typeof(IPawn);
-
-            int mostRecentMoveIndex = Moves.Count - 1;
-            int indexToEndAt = Moves.Count < 50 ? 0 : mostRecentMoveIndex - 50;
-
-            for (int i = mostRecentMoveIndex; i > indexToEndAt; i--)
+            get
             {
-                if (Moves[i].pieceType == typeof(IPawn))
-                    return true;
-            }
+                if (Moves.Count == 1)
+                    return Moves.First().pieceType == typeof(IPawn);
 
-            return false;
+                int mostRecentMoveIndex = Moves.Count - 1;
+                int indexToEndAt = Moves.Count < 50 ? 0 : mostRecentMoveIndex - 50;
+
+                for (int i = mostRecentMoveIndex; i > indexToEndAt; i--)
+                {
+                    if (Moves[i].pieceType == typeof(IPawn))
+                        return true;
+                }
+
+                return false;
+            }
         }
     }
 }
