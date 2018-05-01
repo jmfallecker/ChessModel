@@ -75,6 +75,7 @@
     <Compile Include="BitBoardTest.cs" />
     <Compile Include="BoardStateTest.cs" />
     <Compile Include="BoardTest.cs" />
+    <Compile Include="ChessPieceFactoryTest.cs" />
     <Compile Include="ChessPieceMoverTest.cs" />
     <Compile Include="MoveHistoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
