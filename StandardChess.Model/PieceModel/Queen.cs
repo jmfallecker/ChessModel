@@ -83,7 +83,6 @@ namespace StandardChess.Model.PieceModel
         private void GenerateEastMoves(IBoardState boardState, IChessPieceMover cpm)
         {
             GenerateDirectionalMoves(boardState, cpm.East);
-            ;
         }
 
         private void GenerateSouthMoves(IBoardState boardState, IChessPieceMover cpm)

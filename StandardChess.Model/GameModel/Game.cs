@@ -39,7 +39,7 @@ namespace StandardChess.Model.GameModel
             WhitePlayer = ModelLocator.Player;
             BlackPlayer = ModelLocator.Player;
 
-            MoveHistory = new MoveHistory();
+            MoveHistory = ModelLocator.MoveHistory;
 
             State = GameState.Ongoing;
 
@@ -93,7 +93,7 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         ///     The history of all moves for the game.
         /// </summary>
-        public MoveHistory MoveHistory { get; protected set; }
+        public IMoveHistory MoveHistory { get; protected set; }
 
         /// <summary>
         ///     Returns the state of the game via <see cref="GameState" />
@@ -215,7 +215,7 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         ///     This would need finished if a game would want to implement an undo feature.
         /// </summary>
-        private void UndoLastMoveHistory()
+        public void UndoLastMove()
         {
             throw new NotImplementedException();
         }
@@ -562,7 +562,7 @@ namespace StandardChess.Model.GameModel
             Debug.Assert(piecesThreateningKing.Count == 1);
 
             isCheckMateAvoidable |= CanThreateningPieceBeCaptured(piecesThreateningKing[0]);
-            isCheckMateAvoidable |= CanFriendlyPieceMoveBetweenKingAndAttacker(king, piecesThreateningKing[0]);
+            isCheckMateAvoidable |= CanFriendlyPieceMoveBetweenKingAndAttacker(piecesThreateningKing[0]);
 
             return !isCheckMateAvoidable;
         }
@@ -570,10 +570,9 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         ///     Can any friendly piece block the attacker?
         /// </summary>
-        /// <param name="king"></param>
         /// <param name="threateningPiece"></param>
         /// <returns></returns>
-        private bool CanFriendlyPieceMoveBetweenKingAndAttacker(IKing king, IPiece threateningPiece)
+        private bool CanFriendlyPieceMoveBetweenKingAndAttacker(IPiece threateningPiece)
         {
             switch (threateningPiece)
             {
@@ -980,7 +979,8 @@ namespace StandardChess.Model.GameModel
             if (pieceType == typeof(IBishop))
                 newPiece = factory.CreateBishop(movingPiece.Location, movingPiece.Color);
 
-            Debug.Assert(newPiece != null);
+            if (newPiece is null)
+                throw new PawnPromotionException(@"A pawn can only be promoted to a Queen, Knight, Rook or Bishop.");
 
             newPiece.HasMoved = true;
 
@@ -991,6 +991,7 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         ///     Updates a board for the given move. Does not check legality.
         /// </summary>
+        /// <param name="piece"></param>
         /// <param name="move"></param>
         /// <returns></returns>
         private void ExecuteCastle(IKing piece, IMove move)
@@ -1067,7 +1068,6 @@ namespace StandardChess.Model.GameModel
         /// </summary>
         /// <param name="king"></param>
         /// <param name="rook"></param>
-        /// <param name="board"></param>
         /// <returns></returns>
         private static List<ChessPosition> GetPositionsBetweenCastle(IKing king, IRook rook)
         {

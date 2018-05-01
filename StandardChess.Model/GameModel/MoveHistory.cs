@@ -11,21 +11,21 @@ namespace StandardChess.Model.GameModel
 {
     public class MoveHistory : IMoveHistory
     {
-        private static readonly Dictionary<(Type, ChessColor), string> UnicodeCharacters =
+        private static readonly Dictionary<(Type type, ChessColor color), string> UnicodeCharacters =
             new Dictionary<(Type, ChessColor), string>
             {
-                {(typeof(King), ChessColor.White), "\u2654"},
-                {(typeof(Queen), ChessColor.White), "\u2655"},
-                {(typeof(Rook), ChessColor.White), "\u2656"},
-                {(typeof(Bishop), ChessColor.White), "\u2657"},
-                {(typeof(Knight), ChessColor.White), "\u2658"},
-                {(typeof(Pawn), ChessColor.White), "\u2659"},
-                {(typeof(King), ChessColor.Black), "\u265A"},
-                {(typeof(Queen), ChessColor.Black), "\u265B"},
-                {(typeof(Rook), ChessColor.Black), "\u265C"},
-                {(typeof(Bishop), ChessColor.Black), "\u265D"},
-                {(typeof(Knight), ChessColor.Black), "\u265E"},
-                {(typeof(Pawn), ChessColor.Black), "\u265F"}
+                {(typeof(IKing), ChessColor.White), "\u2654"},
+                {(typeof(IQueen), ChessColor.White), "\u2655"},
+                {(typeof(IRook), ChessColor.White), "\u2656"},
+                {(typeof(IBishop), ChessColor.White), "\u2657"},
+                {(typeof(IKnight), ChessColor.White), "\u2658"},
+                {(typeof(IPawn), ChessColor.White), "\u2659"},
+                {(typeof(IKing), ChessColor.Black), "\u265A"},
+                {(typeof(IQueen), ChessColor.Black), "\u265B"},
+                {(typeof(IRook), ChessColor.Black), "\u265C"},
+                {(typeof(IBishop), ChessColor.Black), "\u265D"},
+                {(typeof(IKnight), ChessColor.Black), "\u265E"},
+                {(typeof(IPawn), ChessColor.Black), "\u265F"}
             };
 
         public MoveHistory()
@@ -111,8 +111,18 @@ namespace StandardChess.Model.GameModel
 
         private static string GetChessPieceUnicode(IPiece piece)
         {
-            Type type = piece.GetType();
-            return UnicodeCharacters[(type, piece.Color)];
+            Type[] interfaces = piece.GetType().GetInterfaces();
+            Type pieceInterface = null;
+
+            // find which piece interface (IPawn, IBishop, etc.) the piece implements
+            // and get the unicode character based on that interface.
+            foreach ((Type type, ChessColor color) in UnicodeCharacters.Keys)
+            {
+                if (interfaces.Contains(type))
+                    pieceInterface = type;
+            }
+
+            return UnicodeCharacters[(pieceInterface, piece.Color)];
         }
     }
 }

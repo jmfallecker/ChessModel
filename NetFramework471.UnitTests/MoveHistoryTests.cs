@@ -1,13 +1,11 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Utility;
 using StandardChess.Model;
-using StandardChess.Model.GameModel;
 using StandardChess.Model.MovementModel;
-using StandardChess.Model.PieceModel;
+using System.Linq;
 
 namespace NetFramework471.UnitTests
 {

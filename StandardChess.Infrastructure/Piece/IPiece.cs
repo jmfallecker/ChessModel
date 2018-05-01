@@ -26,7 +26,7 @@ namespace StandardChess.Infrastructure.Piece
         void GenerateCaptures(IBoardState boardState, IBoardState owningPlayerBoardState);
 
         /// <summary>
-        ///     Ensure that <see cref="Piece.GenerateMoves" /> is called before this.
+        ///     Ensure that <see cref="GenerateMoves" /> is called before this.
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
@@ -39,7 +39,7 @@ namespace StandardChess.Infrastructure.Piece
         void MoveTo(ChessPosition position);
 
         /// <summary>
-        ///     Ensure that <see cref="Piece.GenerateCaptures" /> is called before this.
+        ///     Ensure that <see cref="GenerateCaptures" /> is called before this.
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
@@ -52,7 +52,7 @@ namespace StandardChess.Infrastructure.Piece
         void CaptureAt(ChessPosition position);
 
         /// <summary>
-        ///     Ensure that <see cref="Piece.GenerateThreatened" /> is called before this.
+        ///     Ensure that <see cref="GenerateThreatened" /> is called before this.
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>

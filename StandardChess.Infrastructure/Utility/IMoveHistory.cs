@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
 

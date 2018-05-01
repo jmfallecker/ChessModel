@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Model;
+using System.Linq;
 using Unity.Interception.Utilities;
 
 namespace NetFramework471.UnitTests
