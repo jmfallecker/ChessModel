@@ -4,11 +4,12 @@ using System.Linq;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
+using StandardChess.Infrastructure.Utility;
 using StandardChess.Model.PieceModel;
 
 namespace StandardChess.Model.GameModel
 {
-    public class MoveHistory
+    public class MoveHistory : IMoveHistory
     {
         private static readonly Dictionary<(Type, ChessColor), string> UnicodeCharacters =
             new Dictionary<(Type, ChessColor), string>

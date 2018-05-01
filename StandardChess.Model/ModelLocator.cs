@@ -1,15 +1,18 @@
-﻿using StandardChess.Infrastructure.BoardInterfaces;
+﻿using System.Runtime.CompilerServices;
+using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Player;
 using StandardChess.Infrastructure.Utility;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
+using StandardChess.Model.GameModel;
 using StandardChess.Model.MovementModel;
 using StandardChess.Model.PieceModel;
 using StandardChess.Model.PlayerModel;
 using Unity;
 using Unity.Lifetime;
+[assembly: InternalsVisibleTo("NetFramework471.UnitTests")]
 
 namespace StandardChess.Model
 {
@@ -28,6 +31,7 @@ namespace StandardChess.Model
             Container.RegisterType<IMove, Move>(new PerResolveLifetimeManager());
             Container.RegisterType<ICapture, Capture>(new PerResolveLifetimeManager());
             Container.RegisterType<IChessPieceFactory, ChessPieceFactory>();
+            Container.RegisterType<IMoveHistory, MoveHistory>(new PerResolveLifetimeManager());
         }
 
         public static IBoardState BoardState => Container.Resolve<IBoardState>();
@@ -45,5 +49,7 @@ namespace StandardChess.Model
         public static ICapture Capture => Container.Resolve<ICapture>();
 
         public static IChessPieceFactory ChessPieceFactory => Container.Resolve<IChessPieceFactory>();
+
+        public static IMoveHistory MoveHistory => Container.Resolve<IMoveHistory>();
     }
 }

@@ -5,11 +5,11 @@ namespace StandardChess.Model.BoardModel
 {
     public class Bitboard : IBitboard
     {
-        public ulong State { get; private set; }
+        public ChessPosition State { get; private set; }
 
         public bool IsLocationOccupied(ChessPosition position)
         {
-            return (position & (ChessPosition)State) == position;
+            return (position & State) == position;
         }
 
         public bool AddPieceToBoard(ChessPosition position)
@@ -17,7 +17,7 @@ namespace StandardChess.Model.BoardModel
             if (IsLocationOccupied(position))
                 return false;
 
-            State |= (ulong)position;
+            State |= position;
             return true;
         }
 
@@ -26,13 +26,13 @@ namespace StandardChess.Model.BoardModel
             if (!IsLocationOccupied(position))
                 return false;
 
-            State ^= (ulong)position;
+            State ^= position;
             return true;
         }
 
         public void ClearAllPieces()
         {
-            State &= 0x0;
+            State = ChessPosition.None;
         }
     }
 }

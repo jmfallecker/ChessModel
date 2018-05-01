@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
+using StandardChess.Infrastructure.Utility;
+using StandardChess.Model;
 using StandardChess.Model.GameModel;
 using StandardChess.Model.MovementModel;
 using StandardChess.Model.PieceModel;
@@ -12,32 +14,44 @@ namespace NetFramework471.UnitTests
     [TestClass]
     public class MoveHistoryTests
     {
+        private readonly IChessPieceFactory _chessPieceFactory = ModelLocator.ChessPieceFactory;
+
         [TestMethod]
         public void Should_AddPieceToMoves()
         {
             // setup
-            var history = new MoveHistory();
-            IPiece piece = new Pawn(ChessPosition.A2, ChessColor.White);
-            IMovable move = new Move {EndingPosition = ChessPosition.A4, StartingPosition = piece.Location};
+            IMoveHistory history = ModelLocator.MoveHistory;
+            IPiece piece = _chessPieceFactory.CreatePawn(ChessPosition.A2, ChessColor.White);
+            IMovable move = ModelLocator.Move;
+            move.StartingPosition = piece.Location;
+            move.EndingPosition = ChessPosition.A4;
 
             // execute
             history.Add(piece, move);
 
             // validate
+            IPiece p = history.Moves.First().piece;
+            IMovable m = history.Moves.First().movable;
             Assert.AreEqual(1, history.Count);
-            Assert.AreEqual(history.Moves.First(), (move, piece.GetType()));
+            Assert.IsTrue(p is IPawn);
+            Assert.IsTrue(m.StartingPosition == move.StartingPosition);
+            Assert.IsTrue(m.EndingPosition == move.EndingPosition);
         }
 
         [TestMethod]
         public void Should_AddMoveToMoveNotationHistory()
         {
             // setup
-            var history = new MoveHistory();
-            IPiece piece1 = new Pawn(ChessPosition.A2, ChessColor.White);
-            IMovable move1 = new Move {EndingPosition = ChessPosition.A4, StartingPosition = piece1.Location};
+            var history = ModelLocator.MoveHistory;
+            IPiece piece1 = _chessPieceFactory.CreatePawn(ChessPosition.A2, ChessColor.White);
+            IMovable move1 = ModelLocator.Move;
+            move1.StartingPosition = piece1.Location;
+            move1.EndingPosition = ChessPosition.A4;
 
-            IPiece piece2 = new Pawn(ChessPosition.A7, ChessColor.Black);
-            IMovable move2 = new Move {EndingPosition = ChessPosition.A5, StartingPosition = piece2.Location};
+            IPiece piece2 = _chessPieceFactory.CreatePawn(ChessPosition.A7, ChessColor.Black);
+            IMovable move2 = ModelLocator.Move;
+            move2.StartingPosition = piece1.Location;
+            move2.EndingPosition = ChessPosition.A5;
 
             // execute
             history.Add(piece1, move1);
@@ -55,12 +69,16 @@ namespace NetFramework471.UnitTests
         public void Should_ReturnTrueForCaptureInLastFifty()
         {
             // setup
-            var history = new MoveHistory();
-            IPiece piece1 = new Pawn(ChessPosition.A2, ChessColor.White);
-            IMovable move1 = new Move {EndingPosition = ChessPosition.A4, StartingPosition = piece1.Location};
+            var history = ModelLocator.MoveHistory;
+            IPiece piece1 = _chessPieceFactory.CreatePawn(ChessPosition.A2, ChessColor.White);
+            IMovable move1 = ModelLocator.Move;
+            move1.StartingPosition = piece1.Location;
+            move1.EndingPosition = ChessPosition.A4;
 
-            IPiece piece2 = new Pawn(ChessPosition.A7, ChessColor.Black);
-            IMovable move2 = new Move {EndingPosition = ChessPosition.A5, StartingPosition = piece2.Location};
+            IPiece piece2 = _chessPieceFactory.CreatePawn(ChessPosition.A7, ChessColor.Black);
+            IMovable move2 = ModelLocator.Move;
+            move2.StartingPosition = piece1.Location;
+            move2.EndingPosition = ChessPosition.A5;
 
             // execute
             for (var i = 0; i < 50; i++)
@@ -69,7 +87,7 @@ namespace NetFramework471.UnitTests
                 history.Add(piece2, move2);
             }
 
-            history.Add(piece1, new Capture {StartingPosition = piece1.Location, EndingPosition = ChessPosition.B3});
+            history.Add(piece1, new Capture { StartingPosition = piece1.Location, EndingPosition = ChessPosition.B3 });
 
             // validate
             Assert.IsTrue(history.WasPieceCapturedInLastFiftyMoves);
@@ -79,15 +97,18 @@ namespace NetFramework471.UnitTests
         public void Should_ReturnFalseForCaptureInLastFifty()
         {
             // setup
-            var history = new MoveHistory();
-            IPiece piece1 = new Pawn(ChessPosition.A2, ChessColor.White);
-            IMovable move1 = new Move {EndingPosition = ChessPosition.A4, StartingPosition = piece1.Location};
+            var history = ModelLocator.MoveHistory;
+            IPiece piece1 = _chessPieceFactory.CreatePawn(ChessPosition.A2, ChessColor.White);
+            IMovable move1 = ModelLocator.Move;
+            move1.StartingPosition = piece1.Location;
+            move1.EndingPosition = ChessPosition.A4;
 
-            IPiece piece2 = new Pawn(ChessPosition.A7, ChessColor.Black);
-            IMovable move2 = new Move {EndingPosition = ChessPosition.A5, StartingPosition = piece2.Location};
-
+            IPiece piece2 = _chessPieceFactory.CreatePawn(ChessPosition.A7, ChessColor.Black);
+            IMovable move2 = ModelLocator.Move;
+            move2.StartingPosition = piece1.Location;
+            move2.EndingPosition = ChessPosition.A5;
             // execute
-            history.Add(piece1, new Capture {StartingPosition = piece1.Location, EndingPosition = ChessPosition.B3});
+            history.Add(piece1, new Capture { StartingPosition = piece1.Location, EndingPosition = ChessPosition.B3 });
 
             for (var i = 0; i < 50; i++)
             {
@@ -103,9 +124,11 @@ namespace NetFramework471.UnitTests
         public void Should_ReturnTrueForPawnMovedInLastFiftyMoves()
         {
             // setup
-            var history = new MoveHistory();
-            IPiece piece1 = new Pawn(ChessPosition.A2, ChessColor.White);
-            IMovable move1 = new Move {EndingPosition = ChessPosition.A4, StartingPosition = piece1.Location};
+            var history = ModelLocator.MoveHistory;
+            IPiece piece1 = _chessPieceFactory.CreatePawn(ChessPosition.A2, ChessColor.White);
+            IMovable move1 = ModelLocator.Move;
+            move1.StartingPosition = piece1.Location;
+            move1.EndingPosition = ChessPosition.A4;
 
             // execute
             history.Add(piece1, move1);
@@ -118,9 +141,11 @@ namespace NetFramework471.UnitTests
         public void Should_ReturnFalseForPawnMovedInLastFiftyMoves()
         {
             // setup
-            var history = new MoveHistory();
-            IPiece piece1 = new Rook(ChessPosition.A2, ChessColor.White);
-            IMovable move1 = new Move {EndingPosition = ChessPosition.A4, StartingPosition = piece1.Location};
+            var history = ModelLocator.MoveHistory;
+            IPiece piece1 = _chessPieceFactory.CreateRook(ChessPosition.A2, ChessColor.White);
+            IMovable move1 = ModelLocator.Move;
+            move1.StartingPosition = piece1.Location;
+            move1.EndingPosition = ChessPosition.A4;
 
             // verify empty list
             Assert.IsFalse(history.WasPawnMovedInLastFiftyMoves);
