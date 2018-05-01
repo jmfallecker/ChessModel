@@ -1,6 +1,5 @@
 ﻿using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
-using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Model.BoardModel
 {
@@ -10,7 +9,7 @@ namespace StandardChess.Model.BoardModel
 
         public bool IsLocationOccupied(ChessPosition position)
         {
-            return ((position & (ChessPosition)State) == position);
+            return (position & (ChessPosition)State) == position;
         }
 
         public bool AddPieceToBoard(ChessPosition position)

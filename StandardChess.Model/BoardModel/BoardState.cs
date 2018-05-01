@@ -4,37 +4,38 @@ using System.Collections.Generic;
 using System.Linq;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
-using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Model.BoardModel
 {
     public class BoardState : IBoardState
     {
-        #region Fields
-
-        /// <summary>
-        /// List used for easier debugging, being able to see occupied square names.
-        /// </summary>
-        private readonly SortedSet<ChessPosition> _occupiedSquares;
-        public IEnumerable<ChessPosition> OccupiedSquares => _occupiedSquares;
-
-        /// <summary>
-        /// Used to keep track of ulong positions of boardstate with bitwise operators.
-        /// </summary>
-        private readonly IBitboard _bitboard;
-
-        #endregion
-
         #region Constructor
 
         /// <summary>
-        /// Provides ability to add/remove pieces from the underlying Bitboard. Also provides ability to see if a position is occupied.
+        ///     Provides ability to add/remove pieces from the underlying Bitboard. Also provides ability to see if a position is
+        ///     occupied.
         /// </summary>
         public BoardState()
         {
             _bitboard = ModelLocator.Bitboard;
             _occupiedSquares = new SortedSet<ChessPosition>();
         }
+
+        #endregion
+
+        #region Fields
+
+        /// <summary>
+        ///     List used for easier debugging, being able to see occupied square names.
+        /// </summary>
+        private readonly SortedSet<ChessPosition> _occupiedSquares;
+
+        public IEnumerable<ChessPosition> OccupiedSquares => _occupiedSquares;
+
+        /// <summary>
+        ///     Used to keep track of ulong positions of boardstate with bitwise operators.
+        /// </summary>
+        private readonly IBitboard _bitboard;
 
         #endregion
 
@@ -117,7 +118,9 @@ namespace StandardChess.Model.BoardModel
         public override int GetHashCode()
         {
             const int RESULT = 17;
-            int occupiedSquaresHash = _occupiedSquares == null ? 0 : EqualityComparer<SortedSet<ChessPosition>>.Default.GetHashCode(_occupiedSquares);
+            int occupiedSquaresHash = _occupiedSquares is null
+                ? 0
+                : EqualityComparer<SortedSet<ChessPosition>>.Default.GetHashCode(_occupiedSquares);
             int bitBoardHash = _bitboard == null ? 0 : EqualityComparer<IBitboard>.Default.GetHashCode(_bitboard);
 
             return 37 * RESULT + occupiedSquaresHash + bitBoardHash;
@@ -131,17 +134,11 @@ namespace StandardChess.Model.BoardModel
         {
             // a position will be a power of two if it is a single chess square location.
             if (IsPowerOfTwo(position))
-            {
                 _occupiedSquares.Add(position);
-            }
             else // a position will not be a power of two if it is multiple square locations combined into one (ChessPosition)ulong value.
-            {
                 foreach (ChessPosition p in Enum.GetValues(typeof(ChessPosition)))
-                {
                     if ((p & position) == p && IsPowerOfTwo(p))
                         _occupiedSquares.Add(p);
-                }
-            }
 
             _bitboard.AddPieceToBoard(position);
         }
@@ -153,7 +150,7 @@ namespace StandardChess.Model.BoardModel
             // subtract 1 and we have a single 0 and rest 1
             // thus, (x & (x - 1)) always equals 0 if x is a power of two.
 
-            return (x != 0) && ((x & (x - 1)) == 0);
+            return x != 0 && (x & (x - 1)) == 0;
         }
 
         private void RemoveFromState(ChessPosition position)

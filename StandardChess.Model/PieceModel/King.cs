@@ -2,8 +2,6 @@
 using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Utility;
-using StandardChess.Model.BoardModel;
-using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Model.PieceModel
 {
@@ -16,7 +14,7 @@ namespace StandardChess.Model.PieceModel
         }
 
         /// <summary>
-        /// Does not consider if the <see cref="IKing"/> will be in check afterwards
+        ///     Does not consider if the <see cref="IKing" /> will be in check afterwards
         /// </summary>
         /// <param name="boardState"></param>
         public override void GenerateMoves(IBoardState boardState)
@@ -36,7 +34,7 @@ namespace StandardChess.Model.PieceModel
         }
 
         /// <summary>
-        /// Does not consider if the <see cref="IKing"/> will be in check afterwards
+        ///     Does not consider if the <see cref="IKing" /> will be in check afterwards
         /// </summary>
         /// <param name="boardState"></param>
         /// <param name="owningPlayerBoardState"></param>

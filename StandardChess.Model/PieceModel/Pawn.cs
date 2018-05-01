@@ -2,16 +2,11 @@
 using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Utility;
-using StandardChess.Model.BoardModel;
-using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Model.PieceModel
 {
     public class Pawn : Piece, IPawn
     {
-        public bool IsCapturableByEnPassant { get; protected set; }
-        public bool IsPromotable { get; protected set; }
-
         public Pawn(ChessPosition initialPosition, ChessColor color)
             : base(initialPosition, color)
         {
@@ -20,35 +15,38 @@ namespace StandardChess.Model.PieceModel
             IsPromotable = false;
         }
 
+        public bool IsCapturableByEnPassant { get; protected set; }
+        public bool IsPromotable { get; protected set; }
+
         /// <summary>
-        /// Generates all legal <see cref="IPawn"/> moves
+        ///     Generates all legal <see cref="IPawn" /> moves
         /// </summary>
         /// <param name="boardState"></param>
         public override void GenerateMoves(IBoardState boardState)
         {
             IChessPieceMover cpm = ModelLocator.ChessPieceMover;
             MoveSet.Clear();
-            ChessPosition oneSpaceFromLocation = (Color == ChessColor.White ? cpm.North(Location) : cpm.South(Location));
+            ChessPosition oneSpaceFromLocation = Color == ChessColor.White ? cpm.North(Location) : cpm.South(Location);
             bool oneSpaceMoveIsLegal = !boardState.Contains(oneSpaceFromLocation);
 
             if (oneSpaceMoveIsLegal)
-            {
                 MoveSet.Add(oneSpaceFromLocation);
-            }
             else
                 return;
 
-            ChessPosition twoSpaceFromLocation = (Color == ChessColor.White ? cpm.North(oneSpaceFromLocation) : cpm.South(oneSpaceFromLocation));
+            ChessPosition twoSpaceFromLocation = Color == ChessColor.White
+                ? cpm.North(oneSpaceFromLocation)
+                : cpm.South(oneSpaceFromLocation);
             bool twoSpaceMoveIsLegal = !boardState.Contains(twoSpaceFromLocation);
 
             if (!HasMoved && twoSpaceMoveIsLegal)
-            {
-                MoveSet.Add(Color == ChessColor.White ? cpm.North(cpm.North(Location)) : cpm.South(cpm.South(Location)));
-            }
+                MoveSet.Add(Color == ChessColor.White
+                    ? cpm.North(cpm.North(Location))
+                    : cpm.South(cpm.South(Location)));
         }
 
         /// <summary>
-        /// Generates all legal <see cref="IPawn"/> captures
+        ///     Generates all legal <see cref="IPawn" /> captures
         /// </summary>
         /// <param name="boardState">Current board state</param>
         /// <param name="owningPlayerBoardState">State of all of the moving color's pieces</param>
@@ -74,7 +72,7 @@ namespace StandardChess.Model.PieceModel
         }
 
         /// <summary>
-        /// Will update whether the Pawn is able to be promoted or captured via En Passant.
+        ///     Will update whether the Pawn is able to be promoted or captured via En Passant.
         /// </summary>
         /// <param name="position"></param>
         public override void MoveTo(ChessPosition position)
@@ -82,9 +80,9 @@ namespace StandardChess.Model.PieceModel
             if (!HasMoved)
             {
                 IChessPieceMover cpm = ModelLocator.ChessPieceMover;
-                bool moveIsTwoForward = (Color == ChessColor.White) ?
-                    position == cpm.North(cpm.North(Location)) :
-                    position == cpm.South(cpm.South(Location));
+                bool moveIsTwoForward = Color == ChessColor.White
+                    ? position == cpm.North(cpm.North(Location))
+                    : position == cpm.South(cpm.South(Location));
 
                 IsCapturableByEnPassant = moveIsTwoForward;
             }
@@ -95,8 +93,7 @@ namespace StandardChess.Model.PieceModel
 
             base.MoveTo(position);
 
-            ChessPosition promotionRank = Color == ChessColor.White ?
-                ChessPosition.Rank8 : ChessPosition.Rank1;
+            ChessPosition promotionRank = Color == ChessColor.White ? ChessPosition.Rank8 : ChessPosition.Rank1;
 
             if ((position & promotionRank) == position)
                 IsPromotable = true;
@@ -106,7 +103,8 @@ namespace StandardChess.Model.PieceModel
 
         private ChessPosition GenerateCaptureEast(IBoardState enemyPieces, IChessPieceMover cpm)
         {
-            ChessPosition potentialCapture = (Color == ChessColor.White) ? cpm.NorthEast(Location) : cpm.SouthEast(Location);
+            ChessPosition potentialCapture =
+                Color == ChessColor.White ? cpm.NorthEast(Location) : cpm.SouthEast(Location);
             bool isPieceAtCaptureLocation = enemyPieces.Contains(potentialCapture);
 
             return isPieceAtCaptureLocation ? potentialCapture : ChessPosition.None;
@@ -114,7 +112,8 @@ namespace StandardChess.Model.PieceModel
 
         private ChessPosition GenerateCaptureWest(IBoardState enemyPieces, IChessPieceMover cpm)
         {
-            ChessPosition potentialCapture = (Color == ChessColor.White) ? cpm.NorthWest(Location) : cpm.SouthWest(Location);
+            ChessPosition potentialCapture =
+                Color == ChessColor.White ? cpm.NorthWest(Location) : cpm.SouthWest(Location);
             bool isPieceAtCaptureLocation = enemyPieces.Contains(potentialCapture);
 
             return isPieceAtCaptureLocation ? potentialCapture : ChessPosition.None;
@@ -122,12 +121,12 @@ namespace StandardChess.Model.PieceModel
 
         private ChessPosition GenerateThreatenedEast(IChessPieceMover cpm)
         {
-            return (Color == ChessColor.White) ? cpm.NorthEast(Location) : cpm.SouthEast(Location);
+            return Color == ChessColor.White ? cpm.NorthEast(Location) : cpm.SouthEast(Location);
         }
 
         private ChessPosition GenerateThreatenedWest(IChessPieceMover cpm)
         {
-            return (Color == ChessColor.White) ? cpm.NorthWest(Location) : cpm.SouthWest(Location);
+            return Color == ChessColor.White ? cpm.NorthWest(Location) : cpm.SouthWest(Location);
         }
 
         #endregion

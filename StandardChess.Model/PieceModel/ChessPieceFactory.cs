@@ -1,6 +1,5 @@
 ﻿using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.Piece;
-using StandardChess.Model.ChessUtility;
 
 namespace StandardChess.Model.PieceModel
 {

@@ -15,6 +15,7 @@ namespace StandardChess.Model.MovementModel
             return StartingPosition == capture.StartingPosition &&
                    EndingPosition == capture.EndingPosition;
         }
+
         public override int GetHashCode()
         {
             int hashCode = -1795512632;
@@ -27,6 +28,7 @@ namespace StandardChess.Model.MovementModel
         {
             return EqualityComparer<Capture>.Default.Equals(capture1, capture2);
         }
+
         public static bool operator !=(Capture capture1, Capture capture2)
         {
             return !(capture1 == capture2);

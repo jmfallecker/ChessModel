@@ -5,16 +5,10 @@ namespace StandardChess.Model.BoardModel
 {
     public class Board : IBoard
     {
-        #region Properties
-
-        public IBoardState State { get; protected set; }
-
-        #endregion
-
         #region Constructor
 
         /// <summary>
-        /// Creates a board with starting positions.
+        ///     Creates a board with starting positions.
         /// </summary>
         public Board()
         {
@@ -23,6 +17,12 @@ namespace StandardChess.Model.BoardModel
             State.Add(ChessPosition.WhiteStart);
             State.Add(ChessPosition.BlackStart);
         }
+
+        #endregion
+
+        #region Properties
+
+        public IBoardState State { get; protected set; }
 
         #endregion
 

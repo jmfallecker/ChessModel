@@ -31,12 +31,19 @@ namespace StandardChess.Model
         }
 
         public static IBoardState BoardState => Container.Resolve<IBoardState>();
+
         public static IBoard Board => Container.Resolve<IBoard>();
+
         public static IBitboard Bitboard => Container.Resolve<IBitboard>();
+
         public static IChessPieceMover ChessPieceMover => Container.Resolve<IChessPieceMover>();
+
         public static IPlayer Player => Container.Resolve<IPlayer>();
+
         public static IMove Move => Container.Resolve<IMove>();
+
         public static ICapture Capture => Container.Resolve<ICapture>();
+
         public static IChessPieceFactory ChessPieceFactory => Container.Resolve<IChessPieceFactory>();
     }
 }

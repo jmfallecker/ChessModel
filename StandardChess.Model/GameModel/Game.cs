@@ -8,12 +8,7 @@ using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Player;
 using StandardChess.Infrastructure.Utility;
-using StandardChess.Model.BoardModel;
-using StandardChess.Model.ChessUtility;
 using StandardChess.Model.Exceptions;
-using StandardChess.Model.MovementModel;
-using StandardChess.Model.PieceModel;
-using StandardChess.Model.PlayerModel;
 
 namespace StandardChess.Model.GameModel
 {
@@ -25,154 +20,15 @@ namespace StandardChess.Model.GameModel
 
         #endregion
 
-        #region Properties
-
-        /// <summary>
-        /// The current turn. Measured in halves. One full turn is a move from white and a move from black.
-        /// </summary>
-        public double Turn { get; private set; }
-
-        /// <summary>
-        /// The board.
-        /// </summary>
-        public IBoard GameBoard { get; private set; }
-
-        /// <summary>
-        /// White player's pieces.
-        /// </summary>
-        public List<IPiece> WhitePieces { get; protected set; }
-
-        /// <summary>
-        /// Black player's pieces.
-        /// </summary>
-        public List<IPiece> BlackPieces { get; protected set; }
-
-        /// <summary>
-        /// White player.
-        /// </summary>
-        public IPlayer WhitePlayer { get; protected set; }
-
-        /// <summary>
-        /// Black player.
-        /// </summary>
-        public IPlayer BlackPlayer { get; protected set; }
-
-        /// <summary>
-        /// Score of white player.
-        /// </summary>
-        public int WhitePlayerScore => WhitePlayer.Score;
-
-        /// <summary>
-        /// Score of black player.
-        /// </summary>
-        public int BlackPlayerScore => BlackPlayer.Score;
-
-        /// <summary>
-        /// The history of all moves for the game.
-        /// </summary>
-        public MoveHistory MoveHistory { get; protected set; }
-
-        /// <summary>
-        /// Returns the state of the game via <see cref="GameState"/>
-        /// </summary>
-        public GameState State { get; protected set; }
-
-        /// <summary>
-        /// The active player's board state.
-        /// </summary>
-        private IBoardState ActivePlayerBoardState
-        {
-            get
-            {
-                var positions = ChessPosition.None;
-
-                ActivePlayerPieces.ForEach(p =>
-                {
-                    positions |= p.Location;
-                });
-
-                IBoardState activePlayerState = ModelLocator.BoardState;
-                activePlayerState.Add(positions);
-
-                return activePlayerState;
-            }
-        }
-
-        /// <summary>
-        /// The inactive player's board state.
-        /// </summary>
-        private IBoardState InactivePlayerBoardState
-        {
-            get
-            {
-                var positions = ChessPosition.None;
-
-                InactivePlayerPieces.ForEach(p =>
-                {
-                    positions |= p.Location;
-                });
-
-                IBoardState inactiveBoardState = ModelLocator.BoardState;
-                inactiveBoardState.Add(positions);
-                return inactiveBoardState;
-            }
-        }
-
-        /// <summary>
-        /// The active player.
-        /// </summary>
-        private IPlayer ActivePlayer => (ActivePlayerColor == ChessColor.White) ? WhitePlayer : BlackPlayer;
-
-        /// <summary>
-        /// The active player's pieces.
-        /// </summary>
-        private List<IPiece> ActivePlayerPieces => ActivePlayerColor == ChessColor.White ? WhitePieces : BlackPieces;
-
-        /// <summary>
-        /// The inactive player's pieces.
-        /// </summary>
-        private List<IPiece> InactivePlayerPieces => ActivePlayerColor == ChessColor.White ? BlackPieces : WhitePieces;
-
-        /// <summary>
-        /// Color of active player.
-        /// </summary>
-        private ChessColor ActivePlayerColor
-        {
-            get
-            {
-                var integerTurn = (int)(Turn * 2); // turn is incremented by 0.5 this guarantees an integer
-
-                if (integerTurn % 2 == 0)
-                    return ChessColor.White;
-                else
-                    return ChessColor.Black;
-            }
-        }
-
-        /// <summary>
-        /// Color of inactive player.
-        /// </summary>
-        private ChessColor InactivePlayerColor
-        {
-            get
-            {
-                var integerTurn = (int)(Turn * 2); // turn is incremented by 0.5 this guarantees an integer
-
-                if (integerTurn % 2 == 0)
-                    return ChessColor.Black;
-                else
-                    return ChessColor.White;
-            }
-        }
-
-        #endregion
-
         #region Constructor
 
         /// <summary>
-        /// Creates a Game with standard Chess starting board.
+        ///     Creates a Game with standard Chess starting board.
         /// </summary>
-        /// <param name="pawnPromotionFunc">A function to allow the user to select the type of piece to promote a pawn to upon promotion.</param>
+        /// <param name="pawnPromotionFunc">
+        ///     A function to allow the user to select the type of piece to promote a pawn to upon
+        ///     promotion.
+        /// </param>
         public Game(Func<Type> pawnPromotionFunc)
         {
             GameBoard = ModelLocator.Board;
@@ -192,12 +48,145 @@ namespace StandardChess.Model.GameModel
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        ///     The current turn. Measured in halves. One full turn is a move from white and a move from black.
+        /// </summary>
+        public double Turn { get; private set; }
+
+        /// <summary>
+        ///     The board.
+        /// </summary>
+        public IBoard GameBoard { get; private set; }
+
+        /// <summary>
+        ///     White player's pieces.
+        /// </summary>
+        public List<IPiece> WhitePieces { get; protected set; }
+
+        /// <summary>
+        ///     Black player's pieces.
+        /// </summary>
+        public List<IPiece> BlackPieces { get; protected set; }
+
+        /// <summary>
+        ///     White player.
+        /// </summary>
+        public IPlayer WhitePlayer { get; protected set; }
+
+        /// <summary>
+        ///     Black player.
+        /// </summary>
+        public IPlayer BlackPlayer { get; protected set; }
+
+        /// <summary>
+        ///     Score of white player.
+        /// </summary>
+        public int WhitePlayerScore => WhitePlayer.Score;
+
+        /// <summary>
+        ///     Score of black player.
+        /// </summary>
+        public int BlackPlayerScore => BlackPlayer.Score;
+
+        /// <summary>
+        ///     The history of all moves for the game.
+        /// </summary>
+        public MoveHistory MoveHistory { get; protected set; }
+
+        /// <summary>
+        ///     Returns the state of the game via <see cref="GameState" />
+        /// </summary>
+        public GameState State { get; protected set; }
+
+        /// <summary>
+        ///     The active player's board state.
+        /// </summary>
+        private IBoardState ActivePlayerBoardState
+        {
+            get
+            {
+                var positions = ChessPosition.None;
+
+                ActivePlayerPieces.ForEach(p => { positions |= p.Location; });
+
+                IBoardState activePlayerState = ModelLocator.BoardState;
+                activePlayerState.Add(positions);
+
+                return activePlayerState;
+            }
+        }
+
+        /// <summary>
+        ///     The inactive player's board state.
+        /// </summary>
+        private IBoardState InactivePlayerBoardState
+        {
+            get
+            {
+                var positions = ChessPosition.None;
+
+                InactivePlayerPieces.ForEach(p => { positions |= p.Location; });
+
+                IBoardState inactiveBoardState = ModelLocator.BoardState;
+                inactiveBoardState.Add(positions);
+                return inactiveBoardState;
+            }
+        }
+
+        /// <summary>
+        ///     The active player.
+        /// </summary>
+        private IPlayer ActivePlayer => ActivePlayerColor == ChessColor.White ? WhitePlayer : BlackPlayer;
+
+        /// <summary>
+        ///     The active player's pieces.
+        /// </summary>
+        private List<IPiece> ActivePlayerPieces => ActivePlayerColor == ChessColor.White ? WhitePieces : BlackPieces;
+
+        /// <summary>
+        ///     The inactive player's pieces.
+        /// </summary>
+        private List<IPiece> InactivePlayerPieces => ActivePlayerColor == ChessColor.White ? BlackPieces : WhitePieces;
+
+        /// <summary>
+        ///     Color of active player.
+        /// </summary>
+        private ChessColor ActivePlayerColor
+        {
+            get
+            {
+                var integerTurn = (int)(Turn * 2); // turn is incremented by 0.5 this guarantees an integer
+
+                if (integerTurn % 2 == 0)
+                    return ChessColor.White;
+                return ChessColor.Black;
+            }
+        }
+
+        /// <summary>
+        ///     Color of inactive player.
+        /// </summary>
+        private ChessColor InactivePlayerColor
+        {
+            get
+            {
+                var integerTurn = (int)(Turn * 2); // turn is incremented by 0.5 this guarantees an integer
+
+                if (integerTurn % 2 == 0)
+                    return ChessColor.Black;
+                return ChessColor.White;
+            }
+        }
+
+        #endregion
+
         #region Public Methods
 
         /// <summary>
-        /// This method is used to both move and capture a piece.
+        ///     This method is used to move a piece.
         /// </summary>
-        /// <param name="move">If of type <see cref="IMove"/>, this will move a piece. If of type <see cref="ICapture"/>, this will capture a piece.</param>
         /// <returns>Whether move/capture was successful.</returns>
         public bool MovePiece(IMove move)
         {
@@ -208,7 +197,11 @@ namespace StandardChess.Model.GameModel
 
             return isMoveValid;
         }
-
+        /// <summary>
+        ///     This method is used to capture a piece.
+        /// </summary>
+        /// <param name="capture"></param>
+        /// <returns></returns>
         public bool CapturePiece(ICapture capture)
         {
             bool isCaptureValid = MakeCapture(capture);
@@ -220,8 +213,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Not finished, only undoes history of last move, does not undo the last move on the board.
-        /// This would need finished if a game would want to implement an undo feature.
+        ///     This would need finished if a game would want to implement an undo feature.
         /// </summary>
         private void UndoLastMoveHistory()
         {
@@ -233,7 +225,7 @@ namespace StandardChess.Model.GameModel
         #region Private Methods
 
         /// <summary>
-        /// Returns starting position pieces for the passed in color.
+        ///     Returns starting position pieces for the passed in color.
         /// </summary>
         /// <param name="color">Black or White</param>
         /// <returns></returns>
@@ -332,13 +324,13 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Makes a capture.
+        ///     Makes a capture.
         /// </summary>
         /// <param name="capture"></param>
         /// <returns>Returns success of capture.</returns>
         private bool MakeCapture(ICapture capture)
         {
-            var capturingPiece = GetPiece(ActivePlayerColor, capture.StartingPosition);
+            IPiece capturingPiece = GetPiece(ActivePlayerColor, capture.StartingPosition);
 
             bool isCaptureLegalEnPassant = IsCaptureLegalEnPassant(capturingPiece, capture, GameBoard);
 
@@ -355,13 +347,13 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Makes a move.
+        ///     Makes a move.
         /// </summary>
         /// <param name="move"></param>
         /// <returns>Returns whether move was successful</returns>
         private bool MakeMove(IMove move)
         {
-            var piece = GetPiece(ActivePlayerColor, move.StartingPosition);
+            IPiece piece = GetPiece(ActivePlayerColor, move.StartingPosition);
 
             bool isMoveLegalCastle = IsCastleLegal(piece, move, GameBoard);
 
@@ -378,7 +370,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Returns the current state of the game. E.g. Ongoing, BlackInCheck, WhiteInCheckmate, etc.
+        ///     Returns the current state of the game. E.g. Ongoing, BlackInCheck, WhiteInCheckmate, etc.
         /// </summary>
         /// <returns></returns>
         private GameState AnalyzeGameState()
@@ -388,14 +380,14 @@ namespace StandardChess.Model.GameModel
 
             GameState state = AnalyzeForCheck(king, piecesThreateningKing);
 
-            bool isCheckmate = false;
+            var isCheckmate = false;
             if (state != GameState.Ongoing)
                 isCheckmate = IsBoardStateInCheckmate(king, piecesThreateningKing);
 
             if (isCheckmate)
                 state = ActivePlayerColor == ChessColor.White ? GameState.WhiteInCheckmate : GameState.BlackInCheckmate;
 
-            bool isStalemate = false;
+            var isStalemate = false;
             if (!isCheckmate && state != GameState.BlackInCheck && state != GameState.WhiteInCheck)
                 isStalemate = IsBoardStateInStalemate();
 
@@ -406,7 +398,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Determine if the current boardstate is a stalemate state.
+        ///     Determine if the current boardstate is a stalemate state.
         /// </summary>
         /// <returns></returns>
         private bool IsBoardStateInStalemate()
@@ -421,16 +413,14 @@ namespace StandardChess.Model.GameModel
             }
 
             foreach (IPiece piece in ActivePlayerPieces)
-            {
                 if (DoesPieceHaveLegalMove(piece) || DoesPieceHaveLegalCapture(piece))
                     return false;
-            }
 
             return true;
         }
 
         /// <summary>
-        /// Returns whether the piece has any possible legal moves.
+        ///     Returns whether the piece has any possible legal moves.
         /// </summary>
         /// <param name="piece"></param>
         /// <returns></returns>
@@ -464,7 +454,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Returns whether the piece has any possible legal captures.
+        ///     Returns whether the piece has any possible legal captures.
         /// </summary>
         /// <param name="piece"></param>
         /// <returns></returns>
@@ -490,7 +480,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Returns all pieces that are threatening the passed in King
+        ///     Returns all pieces that are threatening the passed in King
         /// </summary>
         /// <param name="king"></param>
         /// <returns></returns>
@@ -509,7 +499,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Generates the two-space moves that a king can make to initiate a castle.
+        ///     Generates the two-space moves that a king can make to initiate a castle.
         /// </summary>
         /// <param name="king"></param>
         /// <returns></returns>
@@ -534,26 +524,24 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Is the board in a check state?
+        ///     Is the board in a check state?
         /// </summary>
         /// <param name="king"></param>
         /// <param name="piecesThreateningKing"></param>
         /// <returns></returns>
         private GameState AnalyzeForCheck(IPiece king, List<IPiece> piecesThreateningKing)
         {
-            bool isKingThreatened = false;
+            var isKingThreatened = false;
             piecesThreateningKing.ForEach(p => isKingThreatened |= p.IsThreateningAt(king.Location));
 
             if (isKingThreatened)
-            {
-                return (ActivePlayerColor == ChessColor.White) ? GameState.WhiteInCheck : GameState.BlackInCheck;
-            }
+                return ActivePlayerColor == ChessColor.White ? GameState.WhiteInCheck : GameState.BlackInCheck;
 
             return GameState.Ongoing;
         }
 
         /// <summary>
-        /// Is the board in a checkmate state?
+        ///     Is the board in a checkmate state?
         /// </summary>
         /// <param name="king"></param>
         /// <param name="piecesThreateningKing"></param>
@@ -567,7 +555,8 @@ namespace StandardChess.Model.GameModel
 
             if (isCheckMateAvoidable)
                 return false;
-            if (isKingInCheckFromMultiplePieces) // if king is attacked by multiple pieces, it must either move or capture to avoid checkmate.
+            if (isKingInCheckFromMultiplePieces
+            ) // if king is attacked by multiple pieces, it must either move or capture to avoid checkmate.
                 return true;
 
             Debug.Assert(piecesThreateningKing.Count == 1);
@@ -579,7 +568,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Can any friendly piece block the attacker?
+        ///     Can any friendly piece block the attacker?
         /// </summary>
         /// <param name="king"></param>
         /// <param name="threateningPiece"></param>
@@ -614,7 +603,8 @@ namespace StandardChess.Model.GameModel
                     capture.StartingPosition = move.StartingPosition;
                     capture.EndingPosition = move.EndingPosition;
 
-                    if (!(IsMoveLegal(activePlayerPiece, move, GameBoard.State) || IsCaptureLegal(activePlayerPiece, capture, GameBoard.State)))
+                    if (!(IsMoveLegal(activePlayerPiece, move, GameBoard.State) ||
+                          IsCaptureLegal(activePlayerPiece, capture, GameBoard.State)))
                         continue;
 
                     if (!DoesPotentialMoveLeaveKingInCheck(move))
@@ -626,7 +616,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Does the active player control a piece that can capture the piece threatening the king?
+        ///     Does the active player control a piece that can capture the piece threatening the king?
         /// </summary>
         private bool CanThreateningPieceBeCaptured(IPiece threateningPiece)
         {
@@ -652,12 +642,12 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Determine if the king can move out of check by capturing a piece or simply moving.
+        ///     Determine if the king can move out of check by capturing a piece or simply moving.
         /// </summary>
         private bool CanKingMoveOrCaptureOutOfCheck(IKing king, IBoardState gameBoardState)
         {
-            bool canKingMoveOutOfCheck = false;
-            bool canKingCaptureOutOfCheck = false;
+            var canKingMoveOutOfCheck = false;
+            var canKingCaptureOutOfCheck = false;
 
             // 1.) Can the king move or capture out of check?
 
@@ -679,24 +669,27 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Retrieves a Piece based on color and position.
+        ///     Retrieves a Piece based on color and position.
         /// </summary>
         /// <param name="color"></param>
         /// <param name="position"></param>
         /// <returns></returns>
         private IPiece GetPiece(ChessColor color, ChessPosition position)
         {
-            List<IPiece> pieces = (color == ChessColor.White) ? WhitePieces : BlackPieces;
+            List<IPiece> pieces = color == ChessColor.White ? WhitePieces : BlackPieces;
             return pieces.Find(p => p.Location == position);
         }
 
         /// <summary>
-        /// Increments the turn by 1/2.
+        ///     Increments the turn by 1/2.
         /// </summary>
-        private void IncrementTurn() => Turn += 0.5;
+        private void IncrementTurn()
+        {
+            Turn += 0.5;
+        }
 
         /// <summary>
-        /// Determines if move is a legal attempt at En Passant.
+        ///     Determines if move is a legal attempt at En Passant.
         /// </summary>
         /// <param name="capturingPiece"></param>
         /// <param name="capture"></param>
@@ -709,9 +702,9 @@ namespace StandardChess.Model.GameModel
                 return false;
 
             // 2.) white pawns must be on Rank 5, black pawns must be on Rank 4
-            bool isCapturingPawnOnCorrectRank = capturingPiece.Color == ChessColor.White ?
-                (capturingPiece.Location & ChessPosition.Rank5) == capturingPiece.Location :
-                (capturingPiece.Location & ChessPosition.Rank4) == capturingPiece.Location;
+            bool isCapturingPawnOnCorrectRank = capturingPiece.Color == ChessColor.White
+                ? (capturingPiece.Location & ChessPosition.Rank5) == capturingPiece.Location
+                : (capturingPiece.Location & ChessPosition.Rank4) == capturingPiece.Location;
 
             if (!isCapturingPawnOnCorrectRank)
                 return false;
@@ -720,11 +713,11 @@ namespace StandardChess.Model.GameModel
             if (gameBoard.IsPositionOccupied(capture.EndingPosition))
                 return false;
 
-            var cpm = ModelLocator.ChessPieceMover;
+            IChessPieceMover cpm = ModelLocator.ChessPieceMover;
             // get the position of the piece we're trying to capture via En Passant
-            ChessPosition locationOfPotentiallyCapturedPiece = capturingPiece.Color == ChessColor.White ?
-                cpm.South(capture.EndingPosition) :
-                cpm.North(capture.EndingPosition);
+            ChessPosition locationOfPotentiallyCapturedPiece = capturingPiece.Color == ChessColor.White
+                ? cpm.South(capture.EndingPosition)
+                : cpm.North(capture.EndingPosition);
 
             // 4.) piece being captured must be a Pawn
             IPiece pieceBeingCaptured = GetPiece(InactivePlayerColor, locationOfPotentiallyCapturedPiece);
@@ -734,7 +727,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Checks if the castle is legal by a process of six standard steps.
+        ///     Checks if the castle is legal by a process of six standard steps.
         /// </summary>
         /// <param name="piece"></param>
         /// <param name="move"></param>
@@ -756,10 +749,8 @@ namespace StandardChess.Model.GameModel
             List<ChessPosition> piecesBetweenRookAndKing = GetPositionsBetweenCastle((IKing)king, rook);
             // 3.) are there pieces standing between the King and Rook?
             foreach (ChessPosition location in piecesBetweenRookAndKing)
-            {
                 if (board.IsPositionOccupied(location))
                     return false;
-            }
 
             // 4.) is the King currently in check?
             if (IsPositionThreatened(king.Location, board, InactivePlayerBoardState))
@@ -767,17 +758,15 @@ namespace StandardChess.Model.GameModel
 
             // 5.) are any positions between King and Rook threatened?
             foreach (ChessPosition position in piecesBetweenRookAndKing)
-            {
                 if (IsPositionThreatened(position, board, InactivePlayerBoardState))
                     return false;
-            }
 
             // 6.) will the King be in check after castling?
             return !IsPositionThreatened(move.EndingPosition, board, InactivePlayerBoardState);
         }
 
         /// <summary>
-        /// Returns approriate Rook based on where the King is trying to move.
+        ///     Returns approriate Rook based on where the King is trying to move.
         /// </summary>
         /// <param name="move">King movement</param>
         /// <param name="color">King color</param>
@@ -805,7 +794,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Determine whether a position is threatened.
+        ///     Determine whether a position is threatened.
         /// </summary>
         /// <param name="position">Position to check</param>
         /// <param name="board">Board to reference</param>
@@ -824,7 +813,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Is a move legal?
+        ///     Is a move legal?
         /// </summary>
         /// <returns></returns>
         private bool IsMoveLegal(IPiece piece, IMove move, IBoardState state)
@@ -838,7 +827,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Is a capture legal?
+        ///     Is a capture legal?
         /// </summary>
         /// <returns></returns>
         private bool IsCaptureLegal(IPiece piece, ICapture capture, IBoardState state)
@@ -851,17 +840,14 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Will the friendly King be in check if this move is made?
+        ///     Will the friendly King be in check if this move is made?
         /// </summary>
         /// <param name="potentialMove">Move to check</param>
         /// <returns></returns>
         private bool DoesPotentialMoveLeaveKingInCheck(IMovable potentialMove)
         {
             IBoard board = ModelLocator.Board;
-            foreach (ChessPosition chessPosition in GameBoard.State)
-            {
-                board.Add(chessPosition);
-            }
+            foreach (ChessPosition chessPosition in GameBoard.State) board.Add(chessPosition);
 
             var game = new Game(() => typeof(IQueen))
             {
@@ -884,7 +870,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Executes En Passant capture. Does not check legality.
+        ///     Executes En Passant capture. Does not check legality.
         /// </summary>
         /// <param name="capture"></param>
         /// <returns></returns>
@@ -893,9 +879,9 @@ namespace StandardChess.Model.GameModel
             IChessPieceMover cpm = ModelLocator.ChessPieceMover;
             IPiece movingPiece = GetPiece(ActivePlayerColor, capture.StartingPosition);
 
-            ChessPosition locationOfLostPiece = movingPiece.Color == ChessColor.White ?
-                cpm.South(capture.EndingPosition) :
-                cpm.North(capture.EndingPosition);
+            ChessPosition locationOfLostPiece = movingPiece.Color == ChessColor.White
+                ? cpm.South(capture.EndingPosition)
+                : cpm.North(capture.EndingPosition);
 
             IPiece lostPiece = GetPiece(InactivePlayerColor, locationOfLostPiece);
 
@@ -905,7 +891,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Updates the board after En Passant. Does not check legality.
+        ///     Updates the board after En Passant. Does not check legality.
         /// </summary>
         /// <param name="attacker">Pawn that is passing</param>
         /// <param name="capture">Capture to make</param>
@@ -923,7 +909,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Executes a normal capture. Does not check for legality.
+        ///     Executes a normal capture. Does not check for legality.
         /// </summary>
         /// <param name="capture"></param>
         /// <returns>Point value of piece being captured</returns>
@@ -942,7 +928,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Adds a move to the Move History
+        ///     Adds a move to the Move History
         /// </summary>
         private void AddToMoveHistory(IPiece piece, IMovable movable)
         {
@@ -950,7 +936,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Executes a move. Does not check legality.
+        ///     Executes a move. Does not check legality.
         /// </summary>
         /// <param name="move"></param>
         private void ExecuteMove(IMove move)
@@ -968,7 +954,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Replaces the pawn on the board with the desired piece as defined by _pawnPromotionFunc
+        ///     Replaces the pawn on the board with the desired piece as defined by _pawnPromotionFunc
         /// </summary>
         /// <param name="movingPiece"></param>
         private void PromotePawn(IPiece movingPiece)
@@ -1003,7 +989,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Updates a board for the given move. Does not check legality.
+        ///     Updates a board for the given move. Does not check legality.
         /// </summary>
         /// <param name="move"></param>
         /// <returns></returns>
@@ -1027,12 +1013,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Executes a Castle. Does not check legality.
-        /// </summary>
-        /// <param name="piece"></param>
-        /// <param name="move"></param>
-        /// <summary>
-        /// Updates board for Castle. Does not check legality.
+        ///     Updates board for Castle. Does not check legality.
         /// </summary>
         /// <param name="king"></param>
         /// <param name="move"></param>
@@ -1041,19 +1022,19 @@ namespace StandardChess.Model.GameModel
         {
             ChessPosition newRookLocation = GetEndingPositionForCastlingRook(king, rook);
 
-            GameBoard.Remove(king.Location); // remove King from board
-            king.MoveTo(move.EndingPosition); // move King, update location
+            GameBoard.Remove(king.Location);    // remove King from board
+            king.MoveTo(move.EndingPosition);   // move King, update location
             GameBoard.Add(move.EndingPosition); // place King on board at update location
 
             GameBoard.Remove(rook.Location); // remove Rook from board
-            rook.MoveTo(newRookLocation); // move Rook, update location
-            GameBoard.Add(rook.Location); // place Rook on board at updated location            
+            rook.MoveTo(newRookLocation);    // move Rook, update location
+            GameBoard.Add(rook.Location);    // place Rook on board at updated location            
 
             AddToMoveHistory(king, move);
         }
 
         /// <summary>
-        /// Determines the position where a castling Rook will end at.
+        ///     Determines the position where a castling Rook will end at.
         /// </summary>
         /// <param name="king"></param>
         /// <param name="rook"></param>
@@ -1082,7 +1063,7 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        /// Retrieves a list of positions that are between the castling Rook and King.
+        ///     Retrieves a list of positions that are between the castling Rook and King.
         /// </summary>
         /// <param name="king"></param>
         /// <param name="rook"></param>
