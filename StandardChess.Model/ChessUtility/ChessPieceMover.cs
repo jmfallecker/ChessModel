@@ -44,7 +44,7 @@ namespace StandardChess.Model.ChessUtility
         /// <returns></returns>
         public ChessPosition North(ChessPosition originalPosition)
         {
-            return (ChessPosition)((ulong)originalPosition << 8);
+            return (ChessPosition) ((ulong) originalPosition << 8);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace StandardChess.Model.ChessUtility
         /// <returns></returns>
         public ChessPosition South(ChessPosition originalPosition)
         {
-            return (ChessPosition)((ulong)originalPosition >> 8);
+            return (ChessPosition) ((ulong) originalPosition >> 8);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace StandardChess.Model.ChessUtility
         /// <returns></returns>
         public ChessPosition East(ChessPosition originalPosition)
         {
-            return (ChessPosition)(((ulong)originalPosition << 1) & NOT_A_FILE);
+            return (ChessPosition) (((ulong) originalPosition << 1) & NOT_A_FILE);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace StandardChess.Model.ChessUtility
         /// <returns></returns>
         public ChessPosition West(ChessPosition originalPosition)
         {
-            return (ChessPosition)(((ulong)originalPosition >> 1) & NOT_H_FILE);
+            return (ChessPosition) (((ulong) originalPosition >> 1) & NOT_H_FILE);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace StandardChess.Model.ChessUtility
         /// <returns></returns>
         public ChessPosition NorthEast(ChessPosition originalPosition)
         {
-            return (ChessPosition)(((ulong)originalPosition << 9) & NOT_A_FILE);
+            return (ChessPosition) (((ulong) originalPosition << 9) & NOT_A_FILE);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace StandardChess.Model.ChessUtility
         /// <returns></returns>
         public ChessPosition SouthEast(ChessPosition originalPosition)
         {
-            return (ChessPosition)(((ulong)originalPosition >> 7) & NOT_A_FILE);
+            return (ChessPosition) (((ulong) originalPosition >> 7) & NOT_A_FILE);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace StandardChess.Model.ChessUtility
         /// <returns></returns>
         public ChessPosition NorthWest(ChessPosition originalPosition)
         {
-            return (ChessPosition)(((ulong)originalPosition << 7) & NOT_H_FILE);
+            return (ChessPosition) (((ulong) originalPosition << 7) & NOT_H_FILE);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace StandardChess.Model.ChessUtility
         /// <returns></returns>
         public ChessPosition SouthWest(ChessPosition originalPosition)
         {
-            return (ChessPosition)(((ulong)originalPosition >> 9) & NOT_H_FILE);
+            return (ChessPosition) (((ulong) originalPosition >> 9) & NOT_H_FILE);
         }
 
         #endregion

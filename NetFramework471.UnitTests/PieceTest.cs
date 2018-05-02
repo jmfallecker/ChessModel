@@ -15,12 +15,10 @@
 // along with this program.If not, see<https: //www.gnu.org/licenses/>.
 
 
-using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
-using StandardChess.Model.BoardModel;
 using StandardChess.Model.PieceModel;
 using Unity.Interception.Utilities;
 
@@ -31,23 +29,9 @@ namespace NetFramework471.UnitTests
     {
         private static readonly ChessPosition[] NotMovesNotCaptures =
             {ChessPosition.A5, ChessPosition.G2, ChessPosition.C4};
-        private static readonly ChessPosition[] TestMoves = { ChessPosition.A1, ChessPosition.B2, ChessPosition.C7 };
-        private static readonly ChessPosition[] TestCaptures = { ChessPosition.A8, ChessPosition.B3, ChessPosition.A2 };
 
-        private class TestPiece : Piece
-        {
-            public TestPiece(ChessPosition initialPosition, ChessColor color) : base(initialPosition, color) { }
-
-            public override void GenerateMoves(IBoardState boardState)
-            {
-                TestMoves.ForEach(m => MoveSet.Add(m));
-            }
-
-            public override void GenerateCaptures(IBoardState boardState, IBoardState owningPlayerBoardState)
-            {
-                TestCaptures.ForEach(c => CaptureSet.Add(c));
-            }
-        }
+        private static readonly ChessPosition[] TestMoves = {ChessPosition.A1, ChessPosition.B2, ChessPosition.C7};
+        private static readonly ChessPosition[] TestCaptures = {ChessPosition.A8, ChessPosition.B3, ChessPosition.A2};
 
         [TestMethod]
         public void Should_MoveToLocation()
@@ -170,6 +154,21 @@ namespace NetFramework471.UnitTests
 
             // verify
             Assert.IsFalse(isThreatening);
+        }
+
+        private class TestPiece : Piece
+        {
+            public TestPiece(ChessPosition initialPosition, ChessColor color) : base(initialPosition, color) { }
+
+            public override void GenerateMoves(IBoardState boardState)
+            {
+                TestMoves.ForEach(m => MoveSet.Add(m));
+            }
+
+            public override void GenerateCaptures(IBoardState boardState, IBoardState owningPlayerBoardState)
+            {
+                TestCaptures.ForEach(c => CaptureSet.Add(c));
+            }
         }
     }
 }

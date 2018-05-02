@@ -27,7 +27,7 @@ namespace StandardChess.Model.MovementModel
 
         public override bool Equals(object obj)
         {
-            var capture = (Capture)obj;
+            var capture = (Capture) obj;
             return StartingPosition == capture.StartingPosition &&
                    EndingPosition == capture.EndingPosition;
         }

@@ -28,6 +28,7 @@ using StandardChess.Model.PieceModel;
 using StandardChess.Model.PlayerModel;
 using Unity;
 using Unity.Lifetime;
+
 [assembly: InternalsVisibleTo("NetFramework471.UnitTests")]
 
 namespace StandardChess.Model

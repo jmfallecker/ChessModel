@@ -21,7 +21,6 @@ using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Utility;
-using StandardChess.Model.PieceModel;
 
 namespace StandardChess.Model.GameModel
 {
@@ -133,10 +132,8 @@ namespace StandardChess.Model.GameModel
             // find which piece interface (IPawn, IBishop, etc.) the piece implements
             // and get the unicode character based on that interface.
             foreach ((Type type, ChessColor color) in UnicodeCharacters.Keys)
-            {
                 if (interfaces.Contains(type))
                     pieceInterface = type;
-            }
 
             return UnicodeCharacters[(pieceInterface, piece.Color)];
         }

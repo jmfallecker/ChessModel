@@ -15,11 +15,11 @@
 // along with this program.If not, see<https: //www.gnu.org/licenses/>.
 
 
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Model;
-using System.Linq;
 using Unity.Interception.Utilities;
 
 namespace NetFramework471.UnitTests
@@ -75,7 +75,7 @@ namespace NetFramework471.UnitTests
         {
             // setup
             IBoardState state = ModelLocator.BoardState;
-            var positions = new[] { ChessPosition.A2, ChessPosition.A1, ChessPosition.A4, ChessPosition.E3 };
+            var positions = new[] {ChessPosition.A2, ChessPosition.A1, ChessPosition.A4, ChessPosition.E3};
             positions.ForEach(p => state.Add(p));
 
             IBoardState state2 = ModelLocator.BoardState;
@@ -92,7 +92,7 @@ namespace NetFramework471.UnitTests
         {
             // setup
             IBoardState state = ModelLocator.BoardState;
-            var positions = new[] { ChessPosition.A2, ChessPosition.A1, ChessPosition.A4, ChessPosition.E3 };
+            var positions = new[] {ChessPosition.A2, ChessPosition.A1, ChessPosition.A4, ChessPosition.E3};
             positions.ForEach(p => state.Add(p));
 
             // execute
@@ -151,7 +151,7 @@ namespace NetFramework471.UnitTests
         {
             // setup
             IBoardState state = ModelLocator.BoardState;
-            var positions = new[] { ChessPosition.A2, ChessPosition.A1, ChessPosition.A4, ChessPosition.E3 };
+            var positions = new[] {ChessPosition.A2, ChessPosition.A1, ChessPosition.A4, ChessPosition.E3};
             positions.ForEach(p => state.Add(p));
 
             IBoardState state2 = ModelLocator.BoardState;

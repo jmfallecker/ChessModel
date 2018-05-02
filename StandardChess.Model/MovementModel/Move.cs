@@ -27,7 +27,7 @@ namespace StandardChess.Model.MovementModel
 
         public override bool Equals(object obj)
         {
-            var move = (Move)obj;
+            var move = (Move) obj;
             return StartingPosition == move.StartingPosition &&
                    EndingPosition == move.EndingPosition;
         }

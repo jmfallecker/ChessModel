@@ -113,12 +113,12 @@ namespace StandardChess.Model.BoardModel
 
         public IEnumerator<ChessPosition> GetEnumerator()
         {
-            return ((IEnumerable<ChessPosition>)_occupiedSquares).GetEnumerator();
+            return ((IEnumerable<ChessPosition>) _occupiedSquares).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable<ChessPosition>)_occupiedSquares).GetEnumerator();
+            return ((IEnumerable<ChessPosition>) _occupiedSquares).GetEnumerator();
         }
 
         #endregion
@@ -127,7 +127,7 @@ namespace StandardChess.Model.BoardModel
 
         public override bool Equals(object obj)
         {
-            var boardState = (IBoardState)obj;
+            var boardState = (IBoardState) obj;
             return OccupiedSquares.SequenceEqual(boardState.OccupiedSquares);
         }
 
