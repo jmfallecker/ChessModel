@@ -78,6 +78,7 @@
     <Compile Include="ChessPieceFactoryTest.cs" />
     <Compile Include="ChessPieceMoverTest.cs" />
     <Compile Include="MoveHistoryTests.cs" />
+    <Compile Include="PieceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

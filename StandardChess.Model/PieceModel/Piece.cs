@@ -162,10 +162,11 @@ namespace StandardChess.Model.PieceModel
                                                    Func<ChessPosition, ChessPosition> directionFunction)
         {
             var capture = ChessPosition.None;
+            ChessPosition resultFromLocation = directionFunction(Location);
 
-            if (!owningPlayerBoardState.Contains(directionFunction(Location)))
+            if (!owningPlayerBoardState.Contains(resultFromLocation))
             {
-                capture = directionFunction(Location);
+                capture = resultFromLocation;
 
                 while (!enemyBoardState.Contains(capture) && !owningPlayerBoardState.Contains(capture))
                     capture = directionFunction(capture);
