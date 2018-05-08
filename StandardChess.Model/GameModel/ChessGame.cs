@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Linq;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Game;
 using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Player;
@@ -28,7 +29,7 @@ using StandardChess.Model.Exceptions;
 
 namespace StandardChess.Model.GameModel
 {
-    public class Game
+    public class ChessGame : IGame
     {
         #region Fields
 
@@ -45,7 +46,7 @@ namespace StandardChess.Model.GameModel
         ///     A function to allow the user to select the type of piece to promote a pawn to upon
         ///     promotion.
         /// </param>
-        public Game(Func<Type> pawnPromotionFunc)
+        public ChessGame(Func<Type> pawnPromotionFunc)
         {
             GameBoard = ModelLocator.Board;
 
@@ -173,7 +174,7 @@ namespace StandardChess.Model.GameModel
         {
             get
             {
-                var integerTurn = (int) (Turn * 2); // turn is incremented by 0.5 this guarantees an integer
+                var integerTurn = (int)(Turn * 2); // turn is incremented by 0.5 this guarantees an integer
 
                 if (integerTurn % 2 == 0)
                     return ChessColor.White;
@@ -188,7 +189,7 @@ namespace StandardChess.Model.GameModel
         {
             get
             {
-                var integerTurn = (int) (Turn * 2); // turn is incremented by 0.5 this guarantees an integer
+                var integerTurn = (int)(Turn * 2); // turn is incremented by 0.5 this guarantees an integer
 
                 if (integerTurn % 2 == 0)
                     return ChessColor.Black;
@@ -460,7 +461,7 @@ namespace StandardChess.Model.GameModel
             if (!(piece is IKing))
                 return false;
 
-            foreach (ChessPosition castleMove in GetCastleMovesForKing((IKing) piece))
+            foreach (ChessPosition castleMove in GetCastleMovesForKing((IKing)piece))
             {
                 move.EndingPosition = castleMove;
                 if (IsCastleLegal(piece, move, GameBoard))
@@ -762,7 +763,7 @@ namespace StandardChess.Model.GameModel
             if (rook == null || rook.HasMoved)
                 return false;
 
-            List<ChessPosition> piecesBetweenRookAndKing = GetPositionsBetweenCastle((IKing) king, rook);
+            List<ChessPosition> piecesBetweenRookAndKing = GetPositionsBetweenCastle((IKing)king, rook);
             // 3.) are there pieces standing between the King and Rook?
             foreach (ChessPosition location in piecesBetweenRookAndKing)
                 if (board.IsPositionOccupied(location))
@@ -806,7 +807,7 @@ namespace StandardChess.Model.GameModel
                     break;
             }
 
-            return rookPosition == ChessPosition.None ? null : (IRook) GetPiece(color, rookPosition);
+            return rookPosition == ChessPosition.None ? null : (IRook)GetPiece(color, rookPosition);
         }
 
         /// <summary>
@@ -865,7 +866,7 @@ namespace StandardChess.Model.GameModel
             IBoard board = ModelLocator.Board;
             foreach (ChessPosition chessPosition in GameBoard.State) board.Add(chessPosition);
 
-            var game = new Game(() => typeof(IQueen))
+            var game = new ChessGame(() => typeof(IQueen))
             {
                 BlackPieces = new List<IPiece>(BlackPieces),
                 WhitePieces = new List<IPiece>(WhitePieces),
