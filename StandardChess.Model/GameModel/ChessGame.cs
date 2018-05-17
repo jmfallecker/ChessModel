@@ -14,10 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.If not, see<https: //www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Infrastructure.Game;
@@ -26,6 +22,10 @@ using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Player;
 using StandardChess.Infrastructure.Utility;
 using StandardChess.Model.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace StandardChess.Model.GameModel
 {
@@ -209,10 +209,12 @@ namespace StandardChess.Model.GameModel
         {
             bool isMoveValid = MakeMove(move);
 
-            if (isMoveValid)
-                State = AnalyzeGameState();
+            if (!isMoveValid) return false;
 
-            return isMoveValid;
+            State = AnalyzeGameState();
+            IncrementTurn();
+
+            return true;
         }
 
         /// <summary>
@@ -224,10 +226,11 @@ namespace StandardChess.Model.GameModel
         {
             bool isCaptureValid = MakeCapture(capture);
 
-            if (isCaptureValid)
-                State = AnalyzeGameState();
+            if (!isCaptureValid) return false;
+            State = AnalyzeGameState();
+            IncrementTurn();
 
-            return isCaptureValid;
+            return true;
         }
 
         /// <summary>
@@ -360,7 +363,6 @@ namespace StandardChess.Model.GameModel
             else
                 ActivePlayer.Score += ExecuteCapture(capture);
 
-            IncrementTurn();
             return true;
         }
 
@@ -383,7 +385,6 @@ namespace StandardChess.Model.GameModel
             else
                 ExecuteMove(move);
 
-            IncrementTurn();
             return true;
         }
 
