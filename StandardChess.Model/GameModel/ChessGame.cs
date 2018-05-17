@@ -65,12 +65,10 @@ namespace StandardChess.Model.GameModel
 
         #endregion
 
-        #region Properties
 
-        /// <summary>
-        ///     The current turn. Measured in halves. One full turn is a move from white and a move from black.
-        /// </summary>
-        public double Turn { get; private set; }
+        #region Refactorings
+
+        #region Board Stuff
 
         /// <summary>
         ///     The board.
@@ -78,14 +76,59 @@ namespace StandardChess.Model.GameModel
         public IBoard GameBoard { get; private set; }
 
         /// <summary>
-        ///     White player's pieces.
+        ///     Updates the board after En Passant. Does not check legality.
         /// </summary>
-        public List<IPiece> WhitePieces { get; protected set; }
+        /// <param name="attacker">Pawn that is passing</param>
+        /// <param name="capture">Capture to make</param>
+        /// <param name="lostPiece">Pawn being captured</param>
+        private void UpdateBoardForEnPassant(IPawn attacker, ICapture capture, IPawn lostPiece)
+        {
+            GameBoard.Remove(attacker.Location);
+            attacker.MoveTo(capture.EndingPosition);
+            GameBoard.Add(capture.EndingPosition);
+
+            GameBoard.Remove(lostPiece.Location);
+            lostPiece.Location = ChessPosition.None;
+
+            MoveHistory.Add(attacker, capture);
+        }
+
+        private void UpdateBoard(IMovable movable)
+        {
+            if (!GameBoard.IsPositionOccupied(movable.StartingPosition)) return;
+
+            if (movable is ICapture && !GameBoard.IsPositionOccupied(movable.EndingPosition)) return;
+
+            if (!(movable is ICapture) && GameBoard.IsPositionOccupied(movable.EndingPosition)) return;
+
+            GameBoard.Remove(movable.StartingPosition);
+            GameBoard.Add(movable.EndingPosition);
+        }
 
         /// <summary>
-        ///     Black player's pieces.
+        ///     Updates board for Castle. Does not check legality.
         /// </summary>
-        public List<IPiece> BlackPieces { get; protected set; }
+        /// <param name="king"></param>
+        /// <param name="move"></param>
+        /// <param name="rook"></param>
+        private void UpdateBoardForCastle(IKing king, IMove move, IRook rook)
+        {
+            ChessPosition newRookLocation = GetEndingPositionForCastlingRook(king, rook);
+
+            GameBoard.Remove(king.Location);    // remove King from board
+            king.MoveTo(move.EndingPosition);   // move King, update location
+            GameBoard.Add(move.EndingPosition); // place King on board at update location
+
+            GameBoard.Remove(rook.Location); // remove Rook from board
+            rook.MoveTo(newRookLocation);    // move Rook, update location
+            GameBoard.Add(rook.Location);    // place Rook on board at updated location            
+
+            MoveHistory.Add(king, move);
+        }
+
+        #endregion
+
+        #region Player Stuff
 
         /// <summary>
         ///     White player.
@@ -106,16 +149,6 @@ namespace StandardChess.Model.GameModel
         ///     Score of black player.
         /// </summary>
         public int BlackPlayerScore => BlackPlayer.Score;
-
-        /// <summary>
-        ///     The history of all moves for the game.
-        /// </summary>
-        public IMoveHistory MoveHistory { get; protected set; }
-
-        /// <summary>
-        ///     Returns the state of the game via <see cref="GameState" />
-        /// </summary>
-        public GameState State { get; protected set; }
 
         /// <summary>
         ///     The active player's board state.
@@ -199,51 +232,17 @@ namespace StandardChess.Model.GameModel
 
         #endregion
 
-        #region Public Methods
+        #region Piece Stuff
 
         /// <summary>
-        ///     This method is used to move a piece.
+        ///     White player's pieces.
         /// </summary>
-        /// <returns>Whether move/capture was successful.</returns>
-        public bool MovePiece(IMove move)
-        {
-            bool isMoveValid = MakeMove(move);
-
-            if (!isMoveValid) return false;
-
-            State = AnalyzeGameState();
-            IncrementTurn();
-
-            return true;
-        }
+        public List<IPiece> WhitePieces { get; protected set; }
 
         /// <summary>
-        ///     This method is used to capture a piece.
+        ///     Black player's pieces.
         /// </summary>
-        /// <param name="capture"></param>
-        /// <returns></returns>
-        public bool CapturePiece(ICapture capture)
-        {
-            bool isCaptureValid = MakeCapture(capture);
-
-            if (!isCaptureValid) return false;
-            State = AnalyzeGameState();
-            IncrementTurn();
-
-            return true;
-        }
-
-        /// <summary>
-        ///     This would need finished if a game would want to implement an undo feature.
-        /// </summary>
-        public void UndoLastMove()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region Private Methods
+        public List<IPiece> BlackPieces { get; protected set; }
 
         /// <summary>
         ///     Returns starting position pieces for the passed in color.
@@ -345,6 +344,146 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
+        ///     Returns all pieces that are threatening the passed in King
+        /// </summary>
+        /// <param name="king"></param>
+        /// <returns></returns>
+        private List<IPiece> GetPiecesThreateningKing(IKing king)
+        {
+            var piecesThreateningKing = new List<IPiece>();
+            InactivePlayerPieces.ForEach(p =>
+            {
+                p.GenerateThreatened(GameBoard.State, InactivePlayerBoardState);
+
+                if (p.IsThreateningAt(king.Location))
+                    piecesThreateningKing.Add(p);
+            });
+
+            return piecesThreateningKing;
+        }
+
+        /// <summary>
+        ///     Retrieves a Piece based on color and position.
+        /// </summary>
+        /// <param name="color"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        private IPiece GetPiece(ChessColor color, ChessPosition position)
+        {
+            List<IPiece> pieces = color == ChessColor.White ? WhitePieces : BlackPieces;
+            return pieces.Find(p => p.Location == position);
+        }
+
+        /// <summary>
+        ///     Determine whether a position is threatened.
+        /// </summary>
+        /// <param name="position">Position to check</param>
+        /// <param name="board">Board to reference</param>
+        /// <param name="inactivePlayerBoardState">Used to only check opponent's pieces</param>
+        /// <returns></returns>
+        private bool IsPositionThreatened(ChessPosition position, IBoard board, IBoardState inactivePlayerBoardState)
+        {
+            foreach (IPiece enemyPiece in InactivePlayerPieces.Where(p => p.Location != ChessPosition.None))
+            {
+                enemyPiece.GenerateThreatened(board.State, inactivePlayerBoardState);
+                if (enemyPiece.IsThreateningAt(position))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        ///     Replaces the pawn on the board with the desired piece as defined by _pawnPromotionFunc
+        /// </summary>
+        /// <param name="movingPiece"></param>
+        private void PromotePawn(IPiece movingPiece)
+        {
+            Type pieceType = _pawnPromotionFunc();
+
+            bool isPieceTypeCorrect = pieceType == typeof(IQueen)
+                                   || pieceType == typeof(IRook)
+                                   || pieceType == typeof(IKnight)
+                                   || pieceType == typeof(IBishop);
+
+            if (!isPieceTypeCorrect)
+                throw new PawnPromotionException(@"A pawn can only be promoted to a Queen, Knight, Rook or Bishop.");
+
+            IChessPieceFactory factory = ModelLocator.ChessPieceFactory;
+            IPiece newPiece = null;
+            if (pieceType == typeof(IQueen))
+                newPiece = factory.CreateQueen(movingPiece.Location, movingPiece.Color);
+            if (pieceType == typeof(IKnight))
+                newPiece = factory.CreateKnight(movingPiece.Location, movingPiece.Color);
+            if (pieceType == typeof(IRook))
+                newPiece = factory.CreateRook(movingPiece.Location, movingPiece.Color);
+            if (pieceType == typeof(IBishop))
+                newPiece = factory.CreateBishop(movingPiece.Location, movingPiece.Color);
+
+            if (newPiece is null)
+                throw new PawnPromotionException(@"A pawn can only be promoted to a Queen, Knight, Rook or Bishop.");
+
+            newPiece.HasMoved = true;
+
+            ActivePlayerPieces.Remove(movingPiece);
+            ActivePlayerPieces.Add(newPiece);
+        }
+
+        #endregion
+
+        #region Rules Stuff
+
+        /// <summary>
+        ///     Determine if the current boardstate is a stalemate state.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsBoardStateInStalemate()
+        {
+            if (MoveHistory.Count >= 50)
+            {
+                bool wasPieceCapturedInLastFiftyMoves = MoveHistory.WasPieceCapturedInLastFiftyMoves;
+                bool wasPawnMovedInLastFiftyMoves = MoveHistory.WasPawnMovedInLastFiftyMoves;
+
+                if (!wasPawnMovedInLastFiftyMoves && !wasPieceCapturedInLastFiftyMoves)
+                    return true;
+            }
+
+            foreach (IPiece piece in ActivePlayerPieces)
+                if (DoesPieceHaveLegalMove(piece) || DoesPieceHaveLegalCapture(piece))
+                    return false;
+
+            return true;
+        }
+
+        /// <summary>
+        ///     Returns the current state of the game. E.g. Ongoing, BlackInCheck, WhiteInCheckmate, etc.
+        /// </summary>
+        /// <returns></returns>
+        private GameState AnalyzeGameState()
+        {
+            var king = ActivePlayerPieces.Find(p => p is IKing) as IKing;
+            List<IPiece> piecesThreateningKing = GetPiecesThreateningKing(king);
+
+            GameState state = AnalyzeForCheck(king, piecesThreateningKing);
+
+            var isCheckmate = false;
+            if (state != GameState.Ongoing)
+                isCheckmate = IsBoardStateInCheckmate(king, piecesThreateningKing);
+
+            if (isCheckmate)
+                state = ActivePlayerColor == ChessColor.White ? GameState.WhiteInCheckmate : GameState.BlackInCheckmate;
+
+            var isStalemate = false;
+            if (!isCheckmate && state != GameState.BlackInCheck && state != GameState.WhiteInCheck)
+                isStalemate = IsBoardStateInStalemate();
+
+            if (isStalemate)
+                state = GameState.Stalemate;
+
+            return state;
+        }
+
+        /// <summary>
         ///     Makes a capture.
         /// </summary>
         /// <param name="capture"></param>
@@ -384,56 +523,6 @@ namespace StandardChess.Model.GameModel
                 ExecuteCastle(piece as IKing, move);
             else
                 ExecuteMove(move);
-
-            return true;
-        }
-
-        /// <summary>
-        ///     Returns the current state of the game. E.g. Ongoing, BlackInCheck, WhiteInCheckmate, etc.
-        /// </summary>
-        /// <returns></returns>
-        private GameState AnalyzeGameState()
-        {
-            var king = ActivePlayerPieces.Find(p => p is IKing) as IKing;
-            List<IPiece> piecesThreateningKing = GetPiecesThreateningKing(king);
-
-            GameState state = AnalyzeForCheck(king, piecesThreateningKing);
-
-            var isCheckmate = false;
-            if (state != GameState.Ongoing)
-                isCheckmate = IsBoardStateInCheckmate(king, piecesThreateningKing);
-
-            if (isCheckmate)
-                state = ActivePlayerColor == ChessColor.White ? GameState.WhiteInCheckmate : GameState.BlackInCheckmate;
-
-            var isStalemate = false;
-            if (!isCheckmate && state != GameState.BlackInCheck && state != GameState.WhiteInCheck)
-                isStalemate = IsBoardStateInStalemate();
-
-            if (isStalemate)
-                state = GameState.Stalemate;
-
-            return state;
-        }
-
-        /// <summary>
-        ///     Determine if the current boardstate is a stalemate state.
-        /// </summary>
-        /// <returns></returns>
-        private bool IsBoardStateInStalemate()
-        {
-            if (MoveHistory.Count >= 50)
-            {
-                bool wasPieceCapturedInLastFiftyMoves = MoveHistory.WasPieceCapturedInLastFiftyMoves;
-                bool wasPawnMovedInLastFiftyMoves = MoveHistory.WasPawnMovedInLastFiftyMoves;
-
-                if (!wasPawnMovedInLastFiftyMoves && !wasPieceCapturedInLastFiftyMoves)
-                    return true;
-            }
-
-            foreach (IPiece piece in ActivePlayerPieces)
-                if (DoesPieceHaveLegalMove(piece) || DoesPieceHaveLegalCapture(piece))
-                    return false;
 
             return true;
         }
@@ -496,25 +585,6 @@ namespace StandardChess.Model.GameModel
             }
 
             return false;
-        }
-
-        /// <summary>
-        ///     Returns all pieces that are threatening the passed in King
-        /// </summary>
-        /// <param name="king"></param>
-        /// <returns></returns>
-        private List<IPiece> GetPiecesThreateningKing(IKing king)
-        {
-            var piecesThreateningKing = new List<IPiece>();
-            InactivePlayerPieces.ForEach(p =>
-            {
-                p.GenerateThreatened(GameBoard.State, InactivePlayerBoardState);
-
-                if (p.IsThreateningAt(king.Location))
-                    piecesThreateningKing.Add(p);
-            });
-
-            return piecesThreateningKing;
         }
 
         /// <summary>
@@ -687,26 +757,6 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        ///     Retrieves a Piece based on color and position.
-        /// </summary>
-        /// <param name="color"></param>
-        /// <param name="position"></param>
-        /// <returns></returns>
-        private IPiece GetPiece(ChessColor color, ChessPosition position)
-        {
-            List<IPiece> pieces = color == ChessColor.White ? WhitePieces : BlackPieces;
-            return pieces.Find(p => p.Location == position);
-        }
-
-        /// <summary>
-        ///     Increments the turn by 1/2.
-        /// </summary>
-        private void IncrementTurn()
-        {
-            Turn += 0.5;
-        }
-
-        /// <summary>
         ///     Determines if move is a legal attempt at En Passant.
         /// </summary>
         /// <param name="capturingPiece"></param>
@@ -812,25 +862,6 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        ///     Determine whether a position is threatened.
-        /// </summary>
-        /// <param name="position">Position to check</param>
-        /// <param name="board">Board to reference</param>
-        /// <param name="inactivePlayerBoardState">Used to only check opponent's pieces</param>
-        /// <returns></returns>
-        private bool IsPositionThreatened(ChessPosition position, IBoard board, IBoardState inactivePlayerBoardState)
-        {
-            foreach (IPiece enemyPiece in InactivePlayerPieces.Where(p => p.Location != ChessPosition.None))
-            {
-                enemyPiece.GenerateThreatened(board.State, inactivePlayerBoardState);
-                if (enemyPiece.IsThreateningAt(position))
-                    return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
         ///     Is a move legal?
         /// </summary>
         /// <returns></returns>
@@ -909,151 +940,6 @@ namespace StandardChess.Model.GameModel
         }
 
         /// <summary>
-        ///     Updates the board after En Passant. Does not check legality.
-        /// </summary>
-        /// <param name="attacker">Pawn that is passing</param>
-        /// <param name="capture">Capture to make</param>
-        /// <param name="lostPiece">Pawn being captured</param>
-        private void UpdateBoardForEnPassant(IPawn attacker, ICapture capture, IPawn lostPiece)
-        {
-            GameBoard.Remove(attacker.Location);
-            attacker.MoveTo(capture.EndingPosition);
-            GameBoard.Add(capture.EndingPosition);
-
-            GameBoard.Remove(lostPiece.Location);
-            lostPiece.Location = ChessPosition.None;
-
-            AddToMoveHistory(attacker, capture);
-        }
-
-        /// <summary>
-        ///     Executes a normal capture. Does not check for legality.
-        /// </summary>
-        /// <param name="capture"></param>
-        /// <returns>Point value of piece being captured</returns>
-        private int ExecuteCapture(ICapture capture)
-        {
-            IPiece movingPiece = GetPiece(ActivePlayerColor, capture.StartingPosition);
-            IPiece lostPiece = GetPiece(InactivePlayerColor, capture.EndingPosition);
-
-            movingPiece.MoveTo(capture.EndingPosition);
-            lostPiece.Location = ChessPosition.None;
-
-            UpdateBoard(capture);
-            AddToMoveHistory(movingPiece, capture);
-
-            return lostPiece.Value;
-        }
-
-        /// <summary>
-        ///     Adds a move to the Move History
-        /// </summary>
-        private void AddToMoveHistory(IPiece piece, IMovable movable)
-        {
-            MoveHistory.Add(piece, movable);
-        }
-
-        /// <summary>
-        ///     Executes a move. Does not check legality.
-        /// </summary>
-        /// <param name="move"></param>
-        private void ExecuteMove(IMove move)
-        {
-            IPiece movingPiece = GetPiece(ActivePlayerColor, move.StartingPosition);
-
-            movingPiece.MoveTo(move.EndingPosition);
-
-            if (movingPiece is IPawn pawn && pawn.IsPromotable)
-                PromotePawn(movingPiece);
-
-            UpdateBoard(move);
-
-            AddToMoveHistory(movingPiece, move);
-        }
-
-        /// <summary>
-        ///     Replaces the pawn on the board with the desired piece as defined by _pawnPromotionFunc
-        /// </summary>
-        /// <param name="movingPiece"></param>
-        private void PromotePawn(IPiece movingPiece)
-        {
-            Type pieceType = _pawnPromotionFunc();
-
-            bool isPieceTypeCorrect = pieceType == typeof(IQueen)
-                                      || pieceType == typeof(IRook)
-                                      || pieceType == typeof(IKnight)
-                                      || pieceType == typeof(IBishop);
-
-            if (!isPieceTypeCorrect)
-                throw new PawnPromotionException(@"A pawn can only be promoted to a Queen, Knight, Rook or Bishop.");
-
-            IChessPieceFactory factory = ModelLocator.ChessPieceFactory;
-            IPiece newPiece = null;
-            if (pieceType == typeof(IQueen))
-                newPiece = factory.CreateQueen(movingPiece.Location, movingPiece.Color);
-            if (pieceType == typeof(IKnight))
-                newPiece = factory.CreateKnight(movingPiece.Location, movingPiece.Color);
-            if (pieceType == typeof(IRook))
-                newPiece = factory.CreateRook(movingPiece.Location, movingPiece.Color);
-            if (pieceType == typeof(IBishop))
-                newPiece = factory.CreateBishop(movingPiece.Location, movingPiece.Color);
-
-            if (newPiece is null)
-                throw new PawnPromotionException(@"A pawn can only be promoted to a Queen, Knight, Rook or Bishop.");
-
-            newPiece.HasMoved = true;
-
-            ActivePlayerPieces.Remove(movingPiece);
-            ActivePlayerPieces.Add(newPiece);
-        }
-
-        /// <summary>
-        ///     Updates a board for the given move. Does not check legality.
-        /// </summary>
-        /// <param name="piece"></param>
-        /// <param name="move"></param>
-        /// <returns></returns>
-        private void ExecuteCastle(IKing piece, IMove move)
-        {
-            IRook rook = GetCastlingRook(move, piece.Color);
-
-            UpdateBoardForCastle(piece, move, rook);
-        }
-
-        private void UpdateBoard(IMovable movable)
-        {
-            if (!GameBoard.IsPositionOccupied(movable.StartingPosition)) return;
-
-            if (movable is ICapture && !GameBoard.IsPositionOccupied(movable.EndingPosition)) return;
-
-            if (!(movable is ICapture) && GameBoard.IsPositionOccupied(movable.EndingPosition)) return;
-
-            GameBoard.Remove(movable.StartingPosition);
-            GameBoard.Add(movable.EndingPosition);
-        }
-
-        /// <summary>
-        ///     Updates board for Castle. Does not check legality.
-        /// </summary>
-        /// <param name="king"></param>
-        /// <param name="move"></param>
-        /// <param name="rook"></param>
-        private void UpdateBoardForCastle(IKing king, IMove move, IRook rook)
-        {
-            ChessPosition newRookLocation = GetEndingPositionForCastlingRook(king, rook);
-
-            GameBoard.Remove(king.Location);    // remove King from board
-            king.MoveTo(move.EndingPosition);   // move King, update location
-            GameBoard.Add(move.EndingPosition); // place King on board at update location
-
-            GameBoard.Remove(rook.Location); // remove Rook from board
-            rook.MoveTo(newRookLocation);    // move Rook, update location
-            GameBoard.Add(rook.Location);    // place Rook on board at updated location            
-
-            AddToMoveHistory(king, move);
-        }
-
-        /// <summary>
         ///     Determines the position where a castling Rook will end at.
         /// </summary>
         /// <param name="king"></param>
@@ -1117,6 +1003,131 @@ namespace StandardChess.Model.GameModel
 
             return locationsInBetween;
         }
+
+        #endregion
+
+        #region Game Stuff
+
+        /// <summary>
+        ///     The current turn. Measured in halves. One full turn is a move from white and a move from black.
+        /// </summary>
+        public double Turn { get; private set; }
+
+        /// <summary>
+        ///     The history of all moves for the game.
+        /// </summary>
+        public IMoveHistory MoveHistory { get; protected set; }
+
+        /// <summary>
+        ///     Returns the state of the game via <see cref="GameState" />
+        /// </summary>
+        public GameState State { get; protected set; }
+
+        /// <summary>
+        ///     Increments the turn by 1/2.
+        /// </summary>
+        private void IncrementTurn()
+        {
+            Turn += 0.5;
+        }
+
+        /// <summary>
+        ///     Executes a normal capture. Does not check for legality.
+        /// </summary>
+        /// <param name="capture"></param>
+        /// <returns>Point value of piece being captured</returns>
+        private int ExecuteCapture(ICapture capture)
+        {
+            IPiece movingPiece = GetPiece(ActivePlayerColor, capture.StartingPosition);
+            IPiece lostPiece = GetPiece(InactivePlayerColor, capture.EndingPosition);
+
+            movingPiece.MoveTo(capture.EndingPosition);
+            lostPiece.Location = ChessPosition.None;
+
+            UpdateBoard(capture);
+            MoveHistory.Add(movingPiece, capture);
+
+            return lostPiece.Value;
+        }
+
+        /// <summary>
+        ///     Executes a move. Does not check legality.
+        /// </summary>
+        /// <param name="move"></param>
+        private void ExecuteMove(IMove move)
+        {
+            IPiece movingPiece = GetPiece(ActivePlayerColor, move.StartingPosition);
+
+            movingPiece.MoveTo(move.EndingPosition);
+
+            if (movingPiece is IPawn pawn && pawn.IsPromotable)
+                PromotePawn(movingPiece);
+
+            UpdateBoard(move);
+
+            MoveHistory.Add(movingPiece, move);
+        }
+
+        /// <summary>
+        ///     Updates a board for the given move. Does not check legality.
+        /// </summary>
+        /// <param name="piece"></param>
+        /// <param name="move"></param>
+        /// <returns></returns>
+        private void ExecuteCastle(IKing piece, IMove move)
+        {
+            IRook rook = GetCastlingRook(move, piece.Color);
+
+            UpdateBoardForCastle(piece, move, rook);
+        }
+
+        #endregion
+
+        #endregion
+
+
+        #region Properties
+
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        ///     This method is used to move a piece.
+        /// </summary>
+        /// <returns>Whether move/capture was successful.</returns>
+        public bool MovePiece(IMove move)
+        {
+            bool isMoveValid = MakeMove(move);
+
+            if (!isMoveValid) return false;
+
+            State = AnalyzeGameState();
+            IncrementTurn();
+
+            return true;
+        }
+
+        /// <summary>
+        ///     This method is used to capture a piece.
+        /// </summary>
+        /// <param name="capture"></param>
+        /// <returns></returns>
+        public bool CapturePiece(ICapture capture)
+        {
+            bool isCaptureValid = MakeCapture(capture);
+
+            if (!isCaptureValid) return false;
+            State = AnalyzeGameState();
+            IncrementTurn();
+
+            return true;
+        }
+
+        #endregion
+
+        #region Private Methods
 
         #endregion
     }
