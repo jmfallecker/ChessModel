@@ -20,7 +20,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Model;
-using Unity.Interception.Utilities;
 
 namespace NetFramework471.UnitTests
 {
@@ -76,7 +75,7 @@ namespace NetFramework471.UnitTests
             // setup
             IBoardState state = ModelLocator.BoardState;
             var positions = new[] {ChessPosition.A2, ChessPosition.A1, ChessPosition.A4, ChessPosition.E3};
-            positions.ForEach(p => state.Add(p));
+            foreach (var position in positions) state.Add(position);
 
             IBoardState state2 = ModelLocator.BoardState;
 
@@ -93,7 +92,7 @@ namespace NetFramework471.UnitTests
             // setup
             IBoardState state = ModelLocator.BoardState;
             var positions = new[] {ChessPosition.A2, ChessPosition.A1, ChessPosition.A4, ChessPosition.E3};
-            positions.ForEach(p => state.Add(p));
+            foreach (var position in positions) state.Add(position);
 
             // execute
             state.Clear();
@@ -152,7 +151,7 @@ namespace NetFramework471.UnitTests
             // setup
             IBoardState state = ModelLocator.BoardState;
             var positions = new[] {ChessPosition.A2, ChessPosition.A1, ChessPosition.A4, ChessPosition.E3};
-            positions.ForEach(p => state.Add(p));
+            foreach (var position in positions) state.Add(position);
 
             IBoardState state2 = ModelLocator.BoardState;
             state2.Add(state);

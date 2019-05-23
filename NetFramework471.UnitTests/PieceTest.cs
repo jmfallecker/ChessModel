@@ -20,7 +20,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Model.PieceModel;
-using Unity.Interception.Utilities;
 
 namespace NetFramework471.UnitTests
 {
@@ -162,12 +161,12 @@ namespace NetFramework471.UnitTests
 
             public override void GenerateMoves(IBoardState boardState)
             {
-                TestMoves.ForEach(m => MoveSet.Add(m));
+                foreach (var move in TestMoves) MoveSet.Add(move);
             }
 
             public override void GenerateCaptures(IBoardState boardState, IBoardState owningPlayerBoardState)
             {
-                TestCaptures.ForEach(c => CaptureSet.Add(c));
+                foreach (var capture in TestCaptures) CaptureSet.Add(capture);
             }
         }
     }
