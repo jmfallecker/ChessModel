@@ -364,11 +364,13 @@ namespace StandardChess.Model.GameModel
             if (!(piece is IKing))
                 return false;
 
-            foreach (ChessPosition castleMove in GetCastleMovesForKing((IKing)piece))
+            IEnumerable<ChessPosition> moves = ModelLocator.CastlingHelper.GetCastleMovesForKing((IKing) piece);
+
+            foreach (ChessPosition castleMove in moves)
             {
                 move.EndingPosition = castleMove;
-                if (IsCastleLegal(piece, move, GameBoard))
-                    return true;
+
+                if (IsCastleLegal(piece, move, GameBoard)) return true;
             }
 
             return false;
@@ -417,31 +419,6 @@ namespace StandardChess.Model.GameModel
             });
 
             return piecesThreateningKing;
-        }
-
-        /// <summary>
-        ///     Generates the two-space moves that a king can make to initiate a castle.
-        /// </summary>
-        /// <param name="king"></param>
-        /// <returns></returns>
-        private static IEnumerable<ChessPosition> GetCastleMovesForKing(IKing king)
-        {
-            var positions = new List<ChessPosition>();
-            if (king.HasMoved)
-                return positions;
-
-            if (king.Color == ChessColor.White)
-            {
-                positions.Add(ChessPosition.G1);
-                positions.Add(ChessPosition.C1);
-            }
-            else
-            {
-                positions.Add(ChessPosition.G8);
-                positions.Add(ChessPosition.C8);
-            }
-
-            return positions;
         }
 
         /// <summary>
@@ -643,7 +620,7 @@ namespace StandardChess.Model.GameModel
             IPiece pieceBeingCaptured = GetPiece(InactivePlayerColor, locationOfPotentiallyCapturedPiece);
 
             // 5.) pawn must be capturable by en passant
-            return pieceBeingCaptured is IPawn && (pieceBeingCaptured as IPawn).IsCapturableByEnPassant;
+            return pieceBeingCaptured is IPawn pawn && pawn.IsCapturableByEnPassant;
         }
 
         /// <summary>
@@ -656,17 +633,15 @@ namespace StandardChess.Model.GameModel
         private bool IsCastleLegal(IPiece piece, IMove move, IBoard board)
         {
             // 1.) has the King moved already?
-            if (!(piece is IKing) || piece.HasMoved)
+            if (!(piece is IKing king) || piece.HasMoved)
                 return false;
-
-            IPiece king = piece;
-
+            
             IRook rook = GetCastlingRook(move, king.Color);
             // 2.) has the Rook moved already?
             if (rook == null || rook.HasMoved)
                 return false;
 
-            List<ChessPosition> piecesBetweenRookAndKing = GetPositionsBetweenCastle((IKing)king, rook);
+            List<ChessPosition> piecesBetweenRookAndKing = ModelLocator.CastlingHelper.GetPositionsBetweenCastle(king, rook);
             // 3.) are there pieces standing between the King and Rook?
             foreach (ChessPosition location in piecesBetweenRookAndKing)
                 if (board.IsPositionOccupied(location))
@@ -693,22 +668,7 @@ namespace StandardChess.Model.GameModel
         /// <returns></returns>
         private IRook GetCastlingRook(IMovable move, ChessColor color)
         {
-            var rookPosition = ChessPosition.None;
-            switch (move.EndingPosition)
-            {
-                case ChessPosition.C1:
-                    rookPosition = ChessPosition.A1;
-                    break;
-                case ChessPosition.G1:
-                    rookPosition = ChessPosition.H1;
-                    break;
-                case ChessPosition.C8:
-                    rookPosition = ChessPosition.A8;
-                    break;
-                case ChessPosition.G8:
-                    rookPosition = ChessPosition.H8;
-                    break;
-            }
+            ChessPosition rookPosition = ModelLocator.CastlingHelper.GetCastlingRookPosition(move);
 
             return rookPosition == ChessPosition.None ? null : (IRook)GetPiece(color, rookPosition);
         }
@@ -766,6 +726,7 @@ namespace StandardChess.Model.GameModel
         /// <returns></returns>
         private bool DoesPotentialMoveLeaveKingInCheck(IMovable potentialMove)
         {
+            // get a new instance of a board
             IBoard board = ModelLocator.Board;
             foreach (ChessPosition chessPosition in GameBoard.State) board.Add(chessPosition);
 
@@ -826,7 +787,7 @@ namespace StandardChess.Model.GameModel
             GameBoard.Remove(lostPiece.Location);
             lostPiece.Location = ChessPosition.None;
 
-            AddToMoveHistory(attacker, capture);
+            MoveHistory.Add(attacker, capture);
         }
 
         /// <summary>
@@ -843,17 +804,9 @@ namespace StandardChess.Model.GameModel
             lostPiece.Location = ChessPosition.None;
 
             UpdateBoard(capture);
-            AddToMoveHistory(movingPiece, capture);
+            MoveHistory.Add(movingPiece, capture);
 
             return lostPiece.Value;
-        }
-
-        /// <summary>
-        ///     Adds a move to the Move History
-        /// </summary>
-        private void AddToMoveHistory(IPiece piece, IMovable movable)
-        {
-            MoveHistory.Add(piece, movable);
         }
 
         /// <summary>
@@ -871,7 +824,7 @@ namespace StandardChess.Model.GameModel
 
             UpdateBoard(move);
 
-            AddToMoveHistory(movingPiece, move);
+            MoveHistory.Add(movingPiece, move);
         }
 
         /// <summary>
@@ -932,7 +885,7 @@ namespace StandardChess.Model.GameModel
         /// <param name="rook"></param>
         private void UpdateBoardForCastle(IKing king, IMove move, IRook rook)
         {
-            ChessPosition newRookLocation = GetEndingPositionForCastlingRook(king, rook);
+            ChessPosition newRookLocation = ModelLocator.CastlingHelper.GetEndingPositionForCastlingRook(king, rook);
 
             GameBoard.Remove(king.Location);    // remove King from board
             king.MoveTo(move.EndingPosition);   // move King, update location
@@ -942,72 +895,7 @@ namespace StandardChess.Model.GameModel
             rook.MoveTo(newRookLocation);    // move Rook, update location
             GameBoard.Add(rook.Location);    // place Rook on board at updated location            
 
-            AddToMoveHistory(king, move);
-        }
-
-        /// <summary>
-        ///     Determines the position where a castling Rook will end at.
-        /// </summary>
-        /// <param name="king"></param>
-        /// <param name="rook"></param>
-        /// <returns></returns>
-        private static ChessPosition GetEndingPositionForCastlingRook(IKing king, IRook rook)
-        {
-            ChessPosition position = rook.Location;
-
-            switch (king.Location)
-            {
-                case ChessPosition.E1 when rook.Location == ChessPosition.A1:
-                    position = ChessPosition.D1;
-                    break;
-                case ChessPosition.E1 when rook.Location == ChessPosition.H1:
-                    position = ChessPosition.F1;
-                    break;
-                case ChessPosition.E8 when rook.Location == ChessPosition.A8:
-                    position = ChessPosition.D8;
-                    break;
-                case ChessPosition.E8 when rook.Location == ChessPosition.H8:
-                    position = ChessPosition.F8;
-                    break;
-            }
-
-            return position;
-        }
-
-        /// <summary>
-        ///     Retrieves a list of positions that are between the castling Rook and King.
-        /// </summary>
-        /// <param name="king"></param>
-        /// <param name="rook"></param>
-        /// <returns></returns>
-        private static List<ChessPosition> GetPositionsBetweenCastle(IKing king, IRook rook)
-        {
-            var locationsInBetween = new List<ChessPosition>();
-
-            // add all locations to check based on where the king and rook are located
-            switch (king.Location)
-            {
-                case ChessPosition.E1 when rook.Location == ChessPosition.A1:
-                    locationsInBetween.Add(ChessPosition.D1);
-                    locationsInBetween.Add(ChessPosition.C1);
-                    locationsInBetween.Add(ChessPosition.B1);
-                    break;
-                case ChessPosition.E1 when rook.Location == ChessPosition.H1:
-                    locationsInBetween.Add(ChessPosition.F1);
-                    locationsInBetween.Add(ChessPosition.G1);
-                    break;
-                case ChessPosition.E8 when rook.Location == ChessPosition.A8:
-                    locationsInBetween.Add(ChessPosition.D8);
-                    locationsInBetween.Add(ChessPosition.C8);
-                    locationsInBetween.Add(ChessPosition.B8);
-                    break;
-                case ChessPosition.E8 when rook.Location == ChessPosition.H8:
-                    locationsInBetween.Add(ChessPosition.F8);
-                    locationsInBetween.Add(ChessPosition.G8);
-                    break;
-            }
-
-            return locationsInBetween;
+            MoveHistory.Add(king, move);
         }
 
         #endregion

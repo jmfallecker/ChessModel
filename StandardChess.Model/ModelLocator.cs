@@ -52,6 +52,7 @@ namespace StandardChess.Model
             Container.RegisterType<IChessPieceMover, ChessPieceMover>();
             Container.RegisterType<IChessPieceFactory, ChessPieceFactory>(new SingletonLifetimeManager());
             Container.RegisterType<PieceCreationUtility>(new SingletonLifetimeManager());
+            Container.RegisterType<CastlingHelper>(new SingletonLifetimeManager());
         }
 
         public static IBoardState BoardState => Container.Resolve<IBoardState>();
@@ -73,5 +74,7 @@ namespace StandardChess.Model
         public static IMoveHistory MoveHistory => Container.Resolve<IMoveHistory>();
 
         public static PieceCreationUtility PieceCreationUtility => Container.Resolve<PieceCreationUtility>();
+
+        public static CastlingHelper CastlingHelper => Container.Resolve<CastlingHelper>();
     }
 }
