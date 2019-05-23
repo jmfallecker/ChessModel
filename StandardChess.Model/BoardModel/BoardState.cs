@@ -127,7 +127,9 @@ namespace StandardChess.Model.BoardModel
 
         public override bool Equals(object obj)
         {
-            var boardState = (IBoardState) obj;
+            if (obj is null) return false;
+            if (!(obj is IBoardState boardState)) return false;
+
             return OccupiedSquares.SequenceEqual(boardState.OccupiedSquares);
         }
 

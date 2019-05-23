@@ -40,15 +40,18 @@ namespace StandardChess.Model
         static ModelLocator()
         {
             Container = new UnityContainer();
+
             Container.RegisterType<IBoardState, BoardState>(new PerResolveLifetimeManager());
             Container.RegisterType<IBoard, Board>(new PerResolveLifetimeManager());
             Container.RegisterType<IBitboard, Bitboard>(new PerResolveLifetimeManager());
-            Container.RegisterType<IChessPieceMover, ChessPieceMover>();
             Container.RegisterType<IPlayer, Player>(new PerResolveLifetimeManager());
             Container.RegisterType<IMove, Move>(new PerResolveLifetimeManager());
             Container.RegisterType<ICapture, Capture>(new PerResolveLifetimeManager());
-            Container.RegisterType<IChessPieceFactory, ChessPieceFactory>();
             Container.RegisterType<IMoveHistory, MoveHistory>(new PerResolveLifetimeManager());
+
+            Container.RegisterType<IChessPieceMover, ChessPieceMover>();
+            Container.RegisterType<IChessPieceFactory, ChessPieceFactory>(new SingletonLifetimeManager());
+            Container.RegisterType<PieceCreationUtility>(new SingletonLifetimeManager());
         }
 
         public static IBoardState BoardState => Container.Resolve<IBoardState>();
@@ -68,5 +71,7 @@ namespace StandardChess.Model
         public static IChessPieceFactory ChessPieceFactory => Container.Resolve<IChessPieceFactory>();
 
         public static IMoveHistory MoveHistory => Container.Resolve<IMoveHistory>();
+
+        public static PieceCreationUtility PieceCreationUtility => Container.Resolve<PieceCreationUtility>();
     }
 }
