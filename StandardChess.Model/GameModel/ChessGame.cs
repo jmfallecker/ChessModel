@@ -66,7 +66,7 @@ namespace StandardChess.Model.GameModel
 
         #endregion
 
-        #region Properties
+        #region Public Properties
 
         /// <summary>
         ///     The current turn. Measured in halves. One full turn is a move from white and a move from black.
@@ -117,6 +117,10 @@ namespace StandardChess.Model.GameModel
         ///     Returns the state of the game via <see cref="GameState" />
         /// </summary>
         public GameState State { get; protected set; }
+
+        #endregion
+
+        #region Private Properties
 
         /// <summary>
         ///     The active player's board state.
