@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.Piece;
+using StandardChess.Model.Exceptions;
 
 namespace StandardChess.Model.ChessUtility
 {
@@ -105,6 +106,33 @@ namespace StandardChess.Model.ChessUtility
             }
 
             return pieces;
+        }
+
+        /// <summary>
+        /// Creates a piece with the same color and location as a promoted pawn.
+        /// </summary>
+        /// <param name="pieceType"></param>
+        /// <param name="position"></param>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        /// <exception cref="PawnPromotionException"></exception>
+        public IPiece PromotePawn(Type pieceType, ChessPosition position, ChessColor color)
+        {
+            if (!(pieceType.BaseType == typeof(IPiece)))
+                throw new PawnPromotionException(
+                    $@"A pawn can only be promoted to a Queen, Knight, Rook or Bishop. {pieceType} is not a valid option.");
+
+            IChessPieceFactory factory = ModelLocator.ChessPieceFactory;
+
+            switch (pieceType)
+            {
+                case IQueen _: return factory.CreateQueen(position, color);
+                case IRook _: return factory.CreateRook(position, color);
+                case IBishop _: return factory.CreateBishop(position, color);
+                case IKnight _: return factory.CreateKnight(position, color);
+            }
+
+            throw new PawnPromotionException(@"A pawn can only be promoted to a Queen, Knight, Rook or Bishop.");
         }
     }
 }

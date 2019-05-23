@@ -769,6 +769,7 @@ namespace StandardChess.Model.GameModel
             IBoard board = ModelLocator.Board;
             foreach (ChessPosition chessPosition in GameBoard.State) board.Add(chessPosition);
 
+            // create a chess game to pre-check the move before allowing a move in the actual game
             var game = new ChessGame(() => typeof(IQueen))
             {
                 BlackPieces = new List<IPiece>(BlackPieces),
@@ -881,28 +882,17 @@ namespace StandardChess.Model.GameModel
         {
             Type pieceType = _pawnPromotionFunc();
 
-            bool isPieceTypeCorrect = pieceType == typeof(IQueen)
-                                      || pieceType == typeof(IRook)
-                                      || pieceType == typeof(IKnight)
-                                      || pieceType == typeof(IBishop);
+            bool isPieceTypeCorrect = pieceType == typeof(IQueen) ||
+                                      pieceType == typeof(IRook) ||
+                                      pieceType == typeof(IKnight) ||
+                                      pieceType == typeof(IBishop);
 
             if (!isPieceTypeCorrect)
                 throw new PawnPromotionException(@"A pawn can only be promoted to a Queen, Knight, Rook or Bishop.");
-
-            IChessPieceFactory factory = ModelLocator.ChessPieceFactory;
-            IPiece newPiece = null;
-            if (pieceType == typeof(IQueen))
-                newPiece = factory.CreateQueen(movingPiece.Location, movingPiece.Color);
-            if (pieceType == typeof(IKnight))
-                newPiece = factory.CreateKnight(movingPiece.Location, movingPiece.Color);
-            if (pieceType == typeof(IRook))
-                newPiece = factory.CreateRook(movingPiece.Location, movingPiece.Color);
-            if (pieceType == typeof(IBishop))
-                newPiece = factory.CreateBishop(movingPiece.Location, movingPiece.Color);
-
-            if (newPiece is null)
-                throw new PawnPromotionException(@"A pawn can only be promoted to a Queen, Knight, Rook or Bishop.");
-
+            
+            IPiece newPiece =
+                ModelLocator.PieceCreationUtility.PromotePawn(pieceType, movingPiece.Location, movingPiece.Color);
+            
             newPiece.HasMoved = true;
 
             ActivePlayerPieces.Remove(movingPiece);
