@@ -22,6 +22,7 @@ using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Player;
 using StandardChess.Infrastructure.Utility;
 using StandardChess.Model.Exceptions;
+using StandardChess.Model.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -125,7 +126,7 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         ///     The active player's board state.
         /// </summary>
-        private IBoardState ActivePlayerBoardState
+        public IBoardState ActivePlayerBoardState
         {
             get
             {
@@ -143,7 +144,7 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         ///     The inactive player's board state.
         /// </summary>
-        private IBoardState InactivePlayerBoardState
+        public IBoardState InactivePlayerBoardState
         {
             get
             {
@@ -160,22 +161,22 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         ///     The active player.
         /// </summary>
-        private IPlayer ActivePlayer => ActivePlayerColor == ChessColor.White ? WhitePlayer : BlackPlayer;
+        public IPlayer ActivePlayer => ActivePlayerColor == ChessColor.White ? WhitePlayer : BlackPlayer;
 
         /// <summary>
         ///     The active player's pieces.
         /// </summary>
-        private List<IPiece> ActivePlayerPieces => ActivePlayerColor == ChessColor.White ? WhitePieces : BlackPieces;
+        public List<IPiece> ActivePlayerPieces => ActivePlayerColor == ChessColor.White ? WhitePieces : BlackPieces;
 
         /// <summary>
         ///     The inactive player's pieces.
         /// </summary>
-        private List<IPiece> InactivePlayerPieces => ActivePlayerColor == ChessColor.White ? BlackPieces : WhitePieces;
+        public List<IPiece> InactivePlayerPieces => ActivePlayerColor == ChessColor.White ? BlackPieces : WhitePieces;
 
         /// <summary>
         ///     Color of active player.
         /// </summary>
-        private ChessColor ActivePlayerColor
+        public ChessColor ActivePlayerColor
         {
             get
             {
@@ -190,7 +191,7 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         ///     Color of inactive player.
         /// </summary>
-        private ChessColor InactivePlayerColor
+        public ChessColor InactivePlayerColor
         {
             get
             {
@@ -625,7 +626,8 @@ namespace StandardChess.Model.GameModel
             if (rook == null || rook.HasMoved)
                 return false;
 
-            List<ChessPosition> piecesBetweenRookAndKing = ModelLocator.CastlingHelper.GetPositionsBetweenCastle(king, rook);
+            List<ChessPosition> piecesBetweenRookAndKing 
+                = ModelLocator.CastlingHelper.GetPositionsBetweenCastle(king, rook);
             // 3.) are there pieces standing between the King and Rook?
             foreach (ChessPosition location in piecesBetweenRookAndKing)
                 if (board.IsPositionOccupied(location))
@@ -710,29 +712,19 @@ namespace StandardChess.Model.GameModel
         /// <returns></returns>
         private bool DoesPotentialMoveLeaveKingInCheck(IMovable potentialMove)
         {
-            // get a new instance of a board
-            IBoard board = ModelLocator.Board;
-            foreach (ChessPosition chessPosition in GameBoard.State) board.Add(chessPosition);
+            var helper = new CheckHelper();
 
             // create a chess game to pre-check the move before allowing a move in the actual game
             var game = new ChessGame(() => typeof(IQueen))
             {
                 BlackPieces = new List<IPiece>(BlackPieces),
                 WhitePieces = new List<IPiece>(WhitePieces),
-                GameBoard = board,
                 Turn = Turn
             };
 
             IPiece king = game.ActivePlayerPieces.Find(p => p is IKing);
-            bool isKingMovingCurrently = king.Location == potentialMove.StartingPosition;
 
-            game.UpdateBoard(potentialMove);
-
-            return game.InactivePlayerPieces.Any(p =>
-            {
-                p.GenerateCaptures(game.GameBoard.State, game.InactivePlayerBoardState);
-                return p.CanCaptureAt(isKingMovingCurrently ? potentialMove.EndingPosition : king.Location);
-            });
+            return helper.DoesPotentialMoveLeaveKingInCheck(potentialMove, king, game);
         }
 
         /// <summary>
@@ -786,7 +778,7 @@ namespace StandardChess.Model.GameModel
             movingPiece.MoveTo(capture.EndingPosition);
             lostPiece.Location = ChessPosition.None;
 
-            UpdateBoard(capture);
+            GameBoard.Execute(capture);
             MoveHistory.Add(movingPiece, capture);
 
             return lostPiece.Value;
@@ -805,7 +797,7 @@ namespace StandardChess.Model.GameModel
             if (movingPiece is IPawn pawn && pawn.IsPromotable)
                 PromotePawn(movingPiece);
 
-            UpdateBoard(move);
+            GameBoard.Execute(move);
 
             MoveHistory.Add(movingPiece, move);
         }
@@ -846,18 +838,6 @@ namespace StandardChess.Model.GameModel
             IRook rook = GetCastlingRook(move, piece.Color);
 
             UpdateBoardForCastle(piece, move, rook);
-        }
-
-        private void UpdateBoard(IMovable movable)
-        {
-            if (!GameBoard.IsPositionOccupied(movable.StartingPosition)) return;
-
-            if (movable is ICapture && !GameBoard.IsPositionOccupied(movable.EndingPosition)) return;
-
-            if (!(movable is ICapture) && GameBoard.IsPositionOccupied(movable.EndingPosition)) return;
-
-            GameBoard.Remove(movable.StartingPosition);
-            GameBoard.Add(movable.EndingPosition);
         }
 
         /// <summary>

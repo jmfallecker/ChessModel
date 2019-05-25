@@ -16,6 +16,7 @@
 
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Movement;
 
 namespace StandardChess.Model.BoardModel
 {
@@ -57,6 +58,18 @@ namespace StandardChess.Model.BoardModel
         public bool Remove(ChessPosition position)
         {
             return State.Remove(position);
+        }
+
+        public void Execute(IMovable movable)
+        {
+            if (!IsPositionOccupied(movable.StartingPosition)) return;
+
+            if (movable is ICapture && !IsPositionOccupied(movable.EndingPosition)) return;
+
+            if (!(movable is ICapture) && IsPositionOccupied(movable.EndingPosition)) return;
+
+            Remove(movable.StartingPosition);
+            Add(movable.EndingPosition);
         }
 
         #endregion
