@@ -53,6 +53,7 @@ namespace StandardChess.Model
             Container.RegisterType<IChessPieceFactory, ChessPieceFactory>(new SingletonLifetimeManager());
             Container.RegisterType<PieceCreationUtility>(new SingletonLifetimeManager());
             Container.RegisterType<CastlingHelper>(new SingletonLifetimeManager());
+            Container.RegisterType<EnPassantHelper>(new SingletonLifetimeManager());
         }
 
         public static IBoardState BoardState => Container.Resolve<IBoardState>();
@@ -76,5 +77,7 @@ namespace StandardChess.Model
         public static PieceCreationUtility PieceCreationUtility => Container.Resolve<PieceCreationUtility>();
 
         public static CastlingHelper CastlingHelper => Container.Resolve<CastlingHelper>();
+
+        public static EnPassantHelper EnPassantHelper => Container.Resolve<EnPassantHelper>();
     }
 }

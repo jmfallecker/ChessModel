@@ -598,33 +598,13 @@ namespace StandardChess.Model.GameModel
         /// <returns></returns>
         private bool IsCaptureLegalEnPassant(IPiece capturingPiece, ICapture capture, IBoard gameBoard)
         {
-            // 1.) only Pawns can capture via En Passant
-            if (!(capturingPiece is IPawn))
-                return false;
+            var helper = ModelLocator.EnPassantHelper;
 
-            // 2.) white pawns must be on Rank 5, black pawns must be on Rank 4
-            bool isCapturingPawnOnCorrectRank = capturingPiece.Color == ChessColor.White
-                ? (capturingPiece.Location & ChessPosition.Rank5) == capturingPiece.Location
-                : (capturingPiece.Location & ChessPosition.Rank4) == capturingPiece.Location;
+            var locationOfPotentiallyCapturedPiece = helper.GetLocationOfPieceBeingCaptured(capturingPiece, capture);
 
-            if (!isCapturingPawnOnCorrectRank)
-                return false;
-
-            // 3.) Pawn may not move to an occupied square
-            if (gameBoard.IsPositionOccupied(capture.EndingPosition))
-                return false;
-
-            IChessPieceMover cpm = ModelLocator.ChessPieceMover;
-            // get the position of the piece we're trying to capture via En Passant
-            ChessPosition locationOfPotentiallyCapturedPiece = capturingPiece.Color == ChessColor.White
-                ? cpm.South(capture.EndingPosition)
-                : cpm.North(capture.EndingPosition);
-
-            // 4.) piece being captured must be a Pawn
             IPiece pieceBeingCaptured = GetPiece(InactivePlayerColor, locationOfPotentiallyCapturedPiece);
 
-            // 5.) pawn must be capturable by en passant
-            return pieceBeingCaptured is IPawn pawn && pawn.IsCapturableByEnPassant;
+            return helper.IsCaptureLegalEnPassant(capturingPiece, pieceBeingCaptured, capture, gameBoard);
         }
 
         /// <summary>
@@ -765,9 +745,8 @@ namespace StandardChess.Model.GameModel
             IChessPieceMover cpm = ModelLocator.ChessPieceMover;
             IPiece movingPiece = GetPiece(ActivePlayerColor, capture.StartingPosition);
 
-            ChessPosition locationOfLostPiece = movingPiece.Color == ChessColor.White
-                ? cpm.South(capture.EndingPosition)
-                : cpm.North(capture.EndingPosition);
+            ChessPosition locationOfLostPiece 
+                = ModelLocator.EnPassantHelper.GetLocationOfPieceBeingCaptured(movingPiece, capture);
 
             IPiece lostPiece = GetPiece(InactivePlayerColor, locationOfLostPiece);
 
