@@ -4,7 +4,7 @@ using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Utility;
 
-namespace StandardChess.Model.GameModel
+namespace StandardChess.Model.Helpers
 {
     internal class EnPassantHelper
     {

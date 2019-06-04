@@ -60,8 +60,11 @@
     <Compile Include="BitBoardTest.cs" />
     <Compile Include="BoardStateTest.cs" />
     <Compile Include="BoardTest.cs" />
+    <Compile Include="ChessGameTest.cs" />
     <Compile Include="ChessPieceFactoryTest.cs" />
     <Compile Include="ChessPieceMoverTest.cs" />
+    <Compile Include="HelperTests\CastlingHelperTest.cs" />
+    <Compile Include="HelperTests\PieceCreationHelperTest.cs" />
     <Compile Include="MoveHistoryTests.cs" />
     <Compile Include="PieceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

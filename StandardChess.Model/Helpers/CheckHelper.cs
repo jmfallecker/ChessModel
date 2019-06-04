@@ -26,8 +26,11 @@ namespace StandardChess.Model.Helpers
 
             return copy.InactivePlayerPieces.Any(p =>
             {
-                p.GenerateCaptures(copy.GameBoard.State, copy.InactivePlayerBoardState);
-                return p.CanCaptureAt(isKingMovingCurrently ? potentialMove.EndingPosition : king.Location);
+                p.GenerateThreatened(board.State, copy.InactivePlayerBoardState);
+                p.GenerateCaptures(board.State, copy.InactivePlayerBoardState);
+
+                return p.CanCaptureAt(isKingMovingCurrently ? potentialMove.EndingPosition : king.Location) |
+                       p.IsThreateningAt(isKingMovingCurrently ? potentialMove.EndingPosition : king.Location);
             });
         }
     }

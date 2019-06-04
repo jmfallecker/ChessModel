@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
 
-namespace StandardChess.Model.ChessUtility
+namespace StandardChess.Model.Helpers
 {
     internal class CastlingHelper
     {

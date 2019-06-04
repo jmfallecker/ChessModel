@@ -23,6 +23,7 @@ using StandardChess.Infrastructure.Utility;
 using StandardChess.Model.BoardModel;
 using StandardChess.Model.ChessUtility;
 using StandardChess.Model.GameModel;
+using StandardChess.Model.Helpers;
 using StandardChess.Model.MovementModel;
 using StandardChess.Model.PieceModel;
 using StandardChess.Model.PlayerModel;
@@ -51,9 +52,10 @@ namespace StandardChess.Model
 
             Container.RegisterType<IChessPieceMover, ChessPieceMover>();
             Container.RegisterType<IChessPieceFactory, ChessPieceFactory>(new SingletonLifetimeManager());
-            Container.RegisterType<PieceCreationUtility>(new SingletonLifetimeManager());
+            Container.RegisterType<PieceCreationHelper>(new SingletonLifetimeManager());
             Container.RegisterType<CastlingHelper>(new SingletonLifetimeManager());
             Container.RegisterType<EnPassantHelper>(new SingletonLifetimeManager());
+            Container.RegisterType<CheckHelper>(new SingletonLifetimeManager());
         }
 
         public static IBoardState BoardState => Container.Resolve<IBoardState>();
@@ -74,10 +76,12 @@ namespace StandardChess.Model
 
         public static IMoveHistory MoveHistory => Container.Resolve<IMoveHistory>();
 
-        public static PieceCreationUtility PieceCreationUtility => Container.Resolve<PieceCreationUtility>();
+        public static PieceCreationHelper PieceCreationHelper => Container.Resolve<PieceCreationHelper>();
 
         public static CastlingHelper CastlingHelper => Container.Resolve<CastlingHelper>();
 
         public static EnPassantHelper EnPassantHelper => Container.Resolve<EnPassantHelper>();
+
+        public static CheckHelper CheckHelper => Container.Resolve<CheckHelper>();
     }
 }

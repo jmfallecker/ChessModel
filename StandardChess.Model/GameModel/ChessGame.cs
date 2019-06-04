@@ -45,7 +45,8 @@ namespace StandardChess.Model.GameModel
         /// </summary>
         /// <param name="pawnPromotionFunc">
         ///     A function to allow the user to select the type of piece to promote a pawn to upon
-        ///     promotion.
+        ///     promotion. Options should be one of <see cref="IQueen"/>, <see cref="IRook"/>,
+        ///     <see cref="IKnight"/>, <see cref="IBishop"/>
         /// </param>
         public ChessGame(Func<Type> pawnPromotionFunc)
         {
@@ -54,8 +55,8 @@ namespace StandardChess.Model.GameModel
 
             GameBoard = ModelLocator.Board;
             
-            WhitePieces = ModelLocator.PieceCreationUtility.CreateStartingPieces(ChessColor.White);
-            BlackPieces = ModelLocator.PieceCreationUtility.CreateStartingPieces(ChessColor.Black);
+            WhitePieces = ModelLocator.PieceCreationHelper.CreateStartingPieces(ChessColor.White);
+            BlackPieces = ModelLocator.PieceCreationHelper.CreateStartingPieces(ChessColor.Black);
 
             WhitePlayer = ModelLocator.Player;
             BlackPlayer = ModelLocator.Player;
@@ -77,7 +78,7 @@ namespace StandardChess.Model.GameModel
         /// <summary>
         ///     The board.
         /// </summary>
-        public IBoard GameBoard { get; private set; }
+        public IBoard GameBoard { get; }
 
         /// <summary>
         ///     White player's pieces.
@@ -304,7 +305,10 @@ namespace StandardChess.Model.GameModel
             var king = ActivePlayerPieces.Find(p => p is IKing) as IKing;
             List<IPiece> piecesThreateningKing = GetPiecesThreateningKing(king);
 
-            GameState state = AnalyzeForCheck(king, piecesThreateningKing);
+            var state = GameState.Ongoing;
+
+            if (piecesThreateningKing.Any())
+                state = king.Color == ChessColor.White ? GameState.WhiteInCheck : GameState.BlackInCheck;
 
             var isCheckmate = false;
             if (state != GameState.Ongoing)
@@ -425,24 +429,7 @@ namespace StandardChess.Model.GameModel
 
             return piecesThreateningKing;
         }
-
-        /// <summary>
-        ///     Is the board in a check state?
-        /// </summary>
-        /// <param name="king"></param>
-        /// <param name="piecesThreateningKing"></param>
-        /// <returns></returns>
-        private GameState AnalyzeForCheck(IPiece king, List<IPiece> piecesThreateningKing)
-        {
-            var isKingThreatened = false;
-            piecesThreateningKing.ForEach(p => isKingThreatened |= p.IsThreateningAt(king.Location));
-
-            if (isKingThreatened)
-                return ActivePlayerColor == ChessColor.White ? GameState.WhiteInCheck : GameState.BlackInCheck;
-
-            return GameState.Ongoing;
-        }
-
+        
         /// <summary>
         ///     Is the board in a checkmate state?
         /// </summary>
@@ -712,8 +699,6 @@ namespace StandardChess.Model.GameModel
         /// <returns></returns>
         private bool DoesPotentialMoveLeaveKingInCheck(IMovable potentialMove)
         {
-            var helper = new CheckHelper();
-
             // create a chess game to pre-check the move before allowing a move in the actual game
             var game = new ChessGame(() => typeof(IQueen))
             {
@@ -724,7 +709,7 @@ namespace StandardChess.Model.GameModel
 
             IPiece king = game.ActivePlayerPieces.Find(p => p is IKing);
 
-            return helper.DoesPotentialMoveLeaveKingInCheck(potentialMove, king, game);
+            return ModelLocator.CheckHelper.DoesPotentialMoveLeaveKingInCheck(potentialMove, king, game);
         }
 
         /// <summary>
@@ -809,17 +794,9 @@ namespace StandardChess.Model.GameModel
         private void PromotePawn(IPiece movingPiece)
         {
             Type pieceType = _pawnPromotionFunc();
-
-            bool isPieceTypeCorrect = pieceType == typeof(IQueen) ||
-                                      pieceType == typeof(IRook) ||
-                                      pieceType == typeof(IKnight) ||
-                                      pieceType == typeof(IBishop);
-
-            if (!isPieceTypeCorrect)
-                throw new PawnPromotionException(@"A pawn can only be promoted to a Queen, Knight, Rook or Bishop.");
             
             IPiece newPiece =
-                ModelLocator.PieceCreationUtility.PromotePawn(pieceType, movingPiece.Location, movingPiece.Color);
+                ModelLocator.PieceCreationHelper.PromotePawn(pieceType, movingPiece.Location, movingPiece.Color);
             
             newPiece.HasMoved = true;
 

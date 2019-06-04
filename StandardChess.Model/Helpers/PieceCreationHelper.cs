@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Model.Exceptions;
 
-namespace StandardChess.Model.ChessUtility
+namespace StandardChess.Model.Helpers
 {
-    internal class PieceCreationUtility
+    internal class PieceCreationHelper
     {
         /// <summary>
         ///     Returns starting position pieces for the passed in color.
@@ -118,19 +117,25 @@ namespace StandardChess.Model.ChessUtility
         /// <exception cref="PawnPromotionException"></exception>
         public IPiece PromotePawn(Type pieceType, ChessPosition position, ChessColor color)
         {
-            if (!(pieceType.BaseType == typeof(IPiece)))
+
+            bool isPieceTypeCorrect = pieceType == typeof(IQueen) ||
+                                      pieceType == typeof(IRook) ||
+                                      pieceType == typeof(IKnight) ||
+                                      pieceType == typeof(IBishop);
+
+            if (!isPieceTypeCorrect)
                 throw new PawnPromotionException(
                     $@"A pawn can only be promoted to a Queen, Knight, Rook or Bishop. {pieceType} is not a valid option.");
 
             IChessPieceFactory factory = ModelLocator.ChessPieceFactory;
 
-            switch (pieceType)
-            {
-                case IQueen _: return factory.CreateQueen(position, color);
-                case IRook _: return factory.CreateRook(position, color);
-                case IBishop _: return factory.CreateBishop(position, color);
-                case IKnight _: return factory.CreateKnight(position, color);
-            }
+            if (pieceType == typeof(IQueen)) return factory.CreateQueen(position, color);
+
+            if (pieceType == typeof(IRook)) return factory.CreateRook(position, color);
+
+            if (pieceType == typeof(IBishop)) return factory.CreateBishop(position, color);
+
+            if (pieceType == typeof(IKnight)) return factory.CreateKnight(position, color);
 
             throw new PawnPromotionException(@"A pawn can only be promoted to a Queen, Knight, Rook or Bishop.");
         }
