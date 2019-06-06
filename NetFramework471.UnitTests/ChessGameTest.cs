@@ -532,7 +532,7 @@ namespace NetFramework471.UnitTests
             isSetupSuccessful &= game.MovePiece(new Move
             {
                 StartingPosition = ChessPosition.F1,
-                EndingPosition = ChessPosition.B5
+                EndingPosition = ChessPosition.C4
             });
             // move black B-pawn
             isSetupSuccessful &= game.MovePiece(new Move
@@ -613,54 +613,63 @@ namespace NetFramework471.UnitTests
                 StartingPosition = ChessPosition.E2,
                 EndingPosition = ChessPosition.E3
             });
+            Assert.IsTrue(isSetupSuccessful);
             // move black A-pawn
             isSetupSuccessful &= game.MovePiece(new Move
             {
                 StartingPosition = ChessPosition.A7,
                 EndingPosition = ChessPosition.A6
             });
+            Assert.IsTrue(isSetupSuccessful);
             // move white king-side bishop out of the way
             isSetupSuccessful &= game.MovePiece(new Move
             {
                 StartingPosition = ChessPosition.F1,
-                EndingPosition = ChessPosition.B5
+                EndingPosition = ChessPosition.C4
             });
+            Assert.IsTrue(isSetupSuccessful);
             // move black B-pawn
             isSetupSuccessful &= game.MovePiece(new Move
             {
                 StartingPosition = ChessPosition.B7,
                 EndingPosition = ChessPosition.B6
             });
+            Assert.IsTrue(isSetupSuccessful);
             // move white king-side knight
             isSetupSuccessful &= game.MovePiece(new Move
             {
                 StartingPosition = ChessPosition.G1,
                 EndingPosition = ChessPosition.F3
             });
+            Assert.IsTrue(isSetupSuccessful);
             // move black C-pawn
             isSetupSuccessful &= game.MovePiece(new Move
             {
                 StartingPosition = ChessPosition.C7,
                 EndingPosition = ChessPosition.C6
             });
+            Assert.IsTrue(isSetupSuccessful);
             // move white King
             isSetupSuccessful &= game.MovePiece(new Move
             {
                 StartingPosition = ChessPosition.E1,
                 EndingPosition = ChessPosition.E2
             });
+            Assert.IsTrue(isSetupSuccessful);
             // move black D-Pawn
             isSetupSuccessful &= game.MovePiece(new Move
             {
                 StartingPosition = ChessPosition.D7,
                 EndingPosition = ChessPosition.D6
             });
+            Assert.IsTrue(isSetupSuccessful);
             // move white king back
             isSetupSuccessful &= game.MovePiece(new Move
             {
                 StartingPosition = ChessPosition.E2,
                 EndingPosition = ChessPosition.E1
             });
+            Assert.IsTrue(isSetupSuccessful);
             // move black F-pawn
             isSetupSuccessful &= game.MovePiece(new Move
             {
@@ -1785,12 +1794,14 @@ namespace NetFramework471.UnitTests
                 StartingPosition = ChessPosition.F2,
                 EndingPosition = ChessPosition.F3
             });
+            Assert.IsTrue(isSetupSuccessful);
             // move black king pawn
             isSetupSuccessful &= game.MovePiece(new Move
             {
                 StartingPosition = ChessPosition.E7,
                 EndingPosition = ChessPosition.E5
             });
+            Assert.IsTrue(isSetupSuccessful);
             // move G pawn
             isSetupSuccessful &= game.MovePiece(new Move
             {

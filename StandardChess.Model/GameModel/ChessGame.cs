@@ -216,12 +216,7 @@ namespace StandardChess.Model.GameModel
         {
             bool isMoveValid = MakeMove(move);
 
-            if (!isMoveValid) return false;
-
-            State = AnalyzeGameState();
-            IncrementTurn();
-
-            return true;
+            return PerformMoveOrCapture(isMoveValid);
         }
 
         /// <summary>
@@ -233,11 +228,7 @@ namespace StandardChess.Model.GameModel
         {
             bool isCaptureValid = MakeCapture(capture);
 
-            if (!isCaptureValid) return false;
-            State = AnalyzeGameState();
-            IncrementTurn();
-
-            return true;
+            return PerformMoveOrCapture(isCaptureValid);
         }
 
         /// <summary>
@@ -251,6 +242,16 @@ namespace StandardChess.Model.GameModel
         #endregion
 
         #region Private Methods
+
+        private bool PerformMoveOrCapture(bool isValid)
+        {
+            if (!isValid) return false;
+
+            IncrementTurn();
+            State = AnalyzeGameState();
+
+            return true;
+        }
 
         /// <summary>
         ///     Makes a capture.
@@ -474,6 +475,7 @@ namespace StandardChess.Model.GameModel
                     return false;
             }
 
+            // todo: fix this function it's not working properly.
             foreach (IPiece activePlayerPiece in ActivePlayerPieces.Where(p => !(p is IKing)))
             {
                 bool FilterPieces(ChessPosition p)
