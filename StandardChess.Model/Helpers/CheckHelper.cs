@@ -1,5 +1,4 @@
 ﻿using StandardChess.Infrastructure;
-using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Model.GameModel;
@@ -16,21 +15,25 @@ namespace StandardChess.Model.Helpers
         /// <returns></returns>
         public bool DoesPotentialMoveLeaveKingInCheck(IMovable potentialMove, IPiece king, ChessGame copy)
         {
-            // get a new instance of a board
-            IBoard board = ModelLocator.Board;
-            foreach (ChessPosition chessPosition in copy.GameBoard.State) board.Add(chessPosition);
-            
             bool isKingMovingCurrently = king.Location == potentialMove.StartingPosition;
+            
+            copy.GameBoard.State.Clear();
+            copy.GameBoard.State.Add(copy.ActivePlayerBoardState);
+            copy.GameBoard.State.Add(copy.InactivePlayerBoardState);
 
-            board.Execute(potentialMove);
+            copy.GameBoard.Execute(potentialMove);
+
+            ChessPosition positionToCheck = isKingMovingCurrently ? potentialMove.EndingPosition : king.Location;
 
             return copy.InactivePlayerPieces.Any(p =>
             {
-                p.GenerateThreatened(board.State, copy.InactivePlayerBoardState);
-                p.GenerateCaptures(board.State, copy.InactivePlayerBoardState);
+                p.GenerateThreatened(copy.GameBoard.State, copy.InactivePlayerBoardState);
+                p.GenerateCaptures(copy.GameBoard.State, copy.InactivePlayerBoardState);
 
-                return p.CanCaptureAt(isKingMovingCurrently ? potentialMove.EndingPosition : king.Location) |
-                       p.IsThreateningAt(isKingMovingCurrently ? potentialMove.EndingPosition : king.Location);
+                bool canCaptureAtPosition = p.CanCaptureAt(positionToCheck);
+                bool isThreateningAtPosition = p.IsThreateningAt(positionToCheck);
+
+                return canCaptureAtPosition || isThreateningAtPosition;
             });
         }
     }

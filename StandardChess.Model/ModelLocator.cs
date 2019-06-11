@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.If not, see<https: //www.gnu.org/licenses/>.
 
-using System.Runtime.CompilerServices;
+using StandardChess.Infrastructure;
 using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
@@ -27,6 +27,7 @@ using StandardChess.Model.Helpers;
 using StandardChess.Model.MovementModel;
 using StandardChess.Model.PieceModel;
 using StandardChess.Model.PlayerModel;
+using System.Runtime.CompilerServices;
 using Unity;
 using Unity.Lifetime;
 
@@ -83,5 +84,23 @@ namespace StandardChess.Model
         public static EnPassantHelper EnPassantHelper => Container.Resolve<EnPassantHelper>();
 
         public static CheckHelper CheckHelper => Container.Resolve<CheckHelper>();
+
+        public static IMove CreateMove(ChessPosition startingPosition, ChessPosition endingPosition)
+        {
+            var move = Move;
+            move.EndingPosition = endingPosition;
+            move.StartingPosition = startingPosition;
+
+            return move;
+        }
+
+        public static ICapture CreateCapture(ChessPosition startingPosition, ChessPosition endingPosition)
+        {
+            var capture = Capture;
+            capture.EndingPosition = endingPosition;
+            capture.StartingPosition = startingPosition;
+
+            return capture;
+        }
     }
 }

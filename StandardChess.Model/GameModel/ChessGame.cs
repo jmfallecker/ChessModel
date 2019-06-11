@@ -21,8 +21,7 @@ using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Player;
 using StandardChess.Infrastructure.Utility;
-using StandardChess.Model.Exceptions;
-using StandardChess.Model.Helpers;
+using StandardChess.Model.BoardModel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -446,14 +445,14 @@ namespace StandardChess.Model.GameModel
 
             if (isCheckMateAvoidable)
                 return false;
-            if (isKingInCheckFromMultiplePieces
-            ) // if king is attacked by multiple pieces, it must either move or capture to avoid checkmate.
+            // if king is attacked by multiple pieces, it must either move or capture to avoid checkmate.
+            if (isKingInCheckFromMultiplePieces)
                 return true;
 
             Debug.Assert(piecesThreateningKing.Count == 1);
 
             isCheckMateAvoidable |= CanThreateningPieceBeCaptured(piecesThreateningKing[0]);
-            isCheckMateAvoidable |= CanFriendlyPieceMoveBetweenKingAndAttacker(piecesThreateningKing[0]);
+            isCheckMateAvoidable |= CanFriendlyPieceMoveBetweenKingAndAttacker(piecesThreateningKing[0], GameBoard.State);
 
             return !isCheckMateAvoidable;
         }
@@ -463,46 +462,38 @@ namespace StandardChess.Model.GameModel
         /// </summary>
         /// <param name="threateningPiece"></param>
         /// <returns></returns>
-        private bool CanFriendlyPieceMoveBetweenKingAndAttacker(IPiece threateningPiece)
+        private bool CanFriendlyPieceMoveBetweenKingAndAttacker(IPiece threateningPiece, IBoardState boardState)
         {
             switch (threateningPiece)
             {
+                // all cases fall through
                 case IKnight _: // knights jump pieces, cannot move between
-                    return false;
                 case IPawn _: // pawns attack in an adjacent square, cannot move between
-                    return false;
                 case IKing _: // king will never be checking another king.
                     return false;
             }
 
-            // todo: fix this function it's not working properly.
-            foreach (IPiece activePlayerPiece in ActivePlayerPieces.Where(p => !(p is IKing)))
+            foreach (IPiece piece in ActivePlayerPieces.Where(p => !(p is IKing) && p.Location != ChessPosition.None))
             {
-                bool FilterPieces(ChessPosition p)
+                piece.GenerateMoves(boardState);
+
+                // use a copy of the MoveSet to prevent the collection from being modified in the following loop
+                IBoardState copyOfMoveSet = new BoardState
                 {
-                    activePlayerPiece.GenerateMoves(GameBoard.State);
-                    return activePlayerPiece.CanMoveTo(p);
-                }
+                    piece.MoveSet
+                };
 
-                foreach (ChessPosition position in threateningPiece.ThreatenSet.Where(FilterPieces))
+                foreach (ChessPosition location in copyOfMoveSet)
                 {
-                    IMove move = ModelLocator.Move;
-                    move.StartingPosition = activePlayerPiece.Location;
-                    move.EndingPosition = position;
+                    var move = ModelLocator.CreateMove(piece.Location, location);
 
-                    ICapture capture = ModelLocator.Capture;
-                    capture.StartingPosition = move.StartingPosition;
-                    capture.EndingPosition = move.EndingPosition;
+                    var isMoveLegal = IsMoveLegal(piece, move, boardState);
+                    var isKingInCheckAfterMove = DoesPotentialMoveLeaveKingInCheck(move);
 
-                    if (!(IsMoveLegal(activePlayerPiece, move, GameBoard.State) ||
-                          IsCaptureLegal(activePlayerPiece, capture, GameBoard.State)))
-                        continue;
-
-                    if (!DoesPotentialMoveLeaveKingInCheck(move))
-                        return true;
+                    if (isMoveLegal && !isKingInCheckAfterMove) return true;
                 }
             }
-
+            
             return false;
         }
 
@@ -519,9 +510,7 @@ namespace StandardChess.Model.GameModel
                 if (!canCaptureAt)
                     continue;
 
-                ICapture capture = ModelLocator.Capture;
-                capture.StartingPosition = activePlayerPiece.Location;
-                capture.EndingPosition = threateningPiece.Location;
+                ICapture capture = ModelLocator.CreateCapture(activePlayerPiece.Location, threateningPiece.Location);
 
                 bool isCaptureLegal = IsCaptureLegal(activePlayerPiece, capture, GameBoard.State);
 
@@ -544,13 +533,8 @@ namespace StandardChess.Model.GameModel
 
             foreach (ChessPosition position in king.ThreatenSet)
             {
-                IMove move = ModelLocator.Move;
-                move.StartingPosition = king.Location;
-                move.EndingPosition = position;
-
-                ICapture capture = ModelLocator.Capture;
-                capture.StartingPosition = king.Location;
-                capture.EndingPosition = position;
+                IMove move = ModelLocator.CreateMove(king.Location, position);
+                ICapture capture = ModelLocator.CreateCapture(king.Location, position);
 
                 canKingMoveOutOfCheck |= IsMoveLegal(king, move, gameBoardState);
                 canKingCaptureOutOfCheck |= IsCaptureLegal(king, capture, gameBoardState);
