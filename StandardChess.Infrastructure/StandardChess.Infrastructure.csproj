@@ -8,7 +8,7 @@
     <FileVersion>1.0.0.1</FileVersion>
     <Description></Description>
     <Version>1.0.0.1</Version>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
 </Project>

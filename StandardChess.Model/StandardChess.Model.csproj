@@ -20,8 +20,12 @@ Summary: Create a move or capture object and pass it to the ChessGame.MovePiece 
 
 A method called ChessGame.AttemptMove(IPlayerAction) is also available which will determine if the playerAction is either an IMove or ICapture object, and perform it/update the game as is expected. This method will also return true or false based on the success of the move or capture.</Description>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 	<PackageTags>Chess Engine .Net Standard</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>true</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
