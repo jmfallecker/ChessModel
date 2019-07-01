@@ -31,9 +31,9 @@ namespace StandardChess.Model.BoardModel
         ///     Provides ability to add/remove pieces from the underlying Bitboard. Also provides ability to see if a position is
         ///     occupied.
         /// </summary>
-        public BoardState()
+        public BoardState(IBitboard bitBoard)
         {
-            _bitboard = ModelLocator.Bitboard;
+            _bitboard = bitBoard;
             _occupiedSquares = new SortedSet<ChessPosition>();
         }
 

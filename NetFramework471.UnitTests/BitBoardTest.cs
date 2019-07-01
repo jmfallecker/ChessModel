@@ -29,7 +29,7 @@ namespace NetFramework471.UnitTests
         public void Should_StartWithBlankState()
         {
             //setup
-            IBitboard bitboard = ModelLocator.Bitboard;
+            IBitboard bitboard = ModelLocator.BitBoard;
 
             // verify
             Assert.AreEqual(ChessPosition.None, bitboard.State);
@@ -39,7 +39,7 @@ namespace NetFramework471.UnitTests
         public void Should_ReturnTrueAfterAddingAPiece()
         {
             // setup
-            IBitboard bitboard = ModelLocator.Bitboard;
+            IBitboard bitboard = ModelLocator.BitBoard;
             const ChessPosition POSITION = ChessPosition.A1;
 
             // execute
@@ -53,7 +53,7 @@ namespace NetFramework471.UnitTests
         public void Should_ReturnTrueWhenLocationIsOccupied()
         {
             // setup
-            IBitboard bitboard = ModelLocator.Bitboard;
+            IBitboard bitboard = ModelLocator.BitBoard;
             const ChessPosition POSITION = ChessPosition.A1;
 
             // execute
@@ -67,7 +67,7 @@ namespace NetFramework471.UnitTests
         public void Should_ReturnRemovePieceFromBoard()
         {
             // setup
-            IBitboard bitboard = ModelLocator.Bitboard;
+            IBitboard bitboard = ModelLocator.BitBoard;
             const ChessPosition POSITION = ChessPosition.A1;
             bitboard.AddPieceToBoard(POSITION);
 
@@ -83,7 +83,7 @@ namespace NetFramework471.UnitTests
         public void Should_ClearAllPieces()
         {
             // setup
-            IBitboard bitboard = ModelLocator.Bitboard;
+            IBitboard bitboard = ModelLocator.BitBoard;
             bitboard.AddPieceToBoard(ChessPosition.A1);
             bitboard.AddPieceToBoard(ChessPosition.A2);
             bitboard.AddPieceToBoard(ChessPosition.B1);

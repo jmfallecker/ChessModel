@@ -63,7 +63,7 @@ namespace StandardChess.Model
 
         public static IBoard Board => Container.Resolve<IBoard>();
 
-        public static IBitboard Bitboard => Container.Resolve<IBitboard>();
+        public static IBitboard BitBoard => Container.Resolve<IBitboard>();
 
         public static IChessPieceMover ChessPieceMover => Container.Resolve<IChessPieceMover>();
 
@@ -87,7 +87,7 @@ namespace StandardChess.Model
 
         public static IMove CreateMove(ChessPosition startingPosition, ChessPosition endingPosition)
         {
-            var move = Move;
+            IMove move = Move;
             move.EndingPosition = endingPosition;
             move.StartingPosition = startingPosition;
 
@@ -96,7 +96,7 @@ namespace StandardChess.Model
 
         public static ICapture CreateCapture(ChessPosition startingPosition, ChessPosition endingPosition)
         {
-            var capture = Capture;
+            ICapture capture = Capture;
             capture.EndingPosition = endingPosition;
             capture.StartingPosition = startingPosition;
 

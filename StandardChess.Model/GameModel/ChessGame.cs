@@ -478,10 +478,8 @@ namespace StandardChess.Model.GameModel
                 piece.GenerateMoves(boardState);
 
                 // use a copy of the MoveSet to prevent the collection from being modified in the following loop
-                IBoardState copyOfMoveSet = new BoardState
-                {
-                    piece.MoveSet
-                };
+                IBoardState copyOfMoveSet = ModelLocator.BoardState;
+                copyOfMoveSet.Add(piece.MoveSet);
 
                 foreach (ChessPosition location in copyOfMoveSet)
                 {

@@ -27,9 +27,9 @@ namespace StandardChess.Model.BoardModel
         /// <summary>
         ///     Creates a board with starting positions.
         /// </summary>
-        public Board()
+        public Board(IBoardState state)
         {
-            State = ModelLocator.BoardState;
+            State = state;
 
             State.Add(ChessPosition.WhiteStart);
             State.Add(ChessPosition.BlackStart);
