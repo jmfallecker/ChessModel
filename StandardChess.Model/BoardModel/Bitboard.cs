@@ -15,7 +15,7 @@
 // along with this program.If not, see<https: //www.gnu.org/licenses/>.
 
 using StandardChess.Infrastructure;
-using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Board;
 
 namespace StandardChess.Model.BoardModel
 {

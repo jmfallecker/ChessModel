@@ -45,11 +45,11 @@ namespace StandardChess.Model.GameModel
 
         public MoveHistory()
         {
-            Moves = new List<(IMovable, IPiece)>();
+            Moves = new List<(IPlayerAction, IPiece)>();
             MovesByNotation = new List<string>();
         }
 
-        public IList<(IMovable movable, IPiece piece)> Moves { get; }
+        public IList<(IPlayerAction movable, IPiece piece)> Moves { get; }
         public IList<string> MovesByNotation { get; }
 
         public int Count => Moves.Count;
@@ -90,30 +90,30 @@ namespace StandardChess.Model.GameModel
             }
         }
 
-        public void Add(IPiece piece, IMovable movable)
+        public void Add(IPiece piece, IPlayerAction playerAction)
         {
-            Moves.Add((movable, piece));
-            AddNotation(piece, movable);
+            Moves.Add((movable: playerAction, piece));
+            AddNotation(piece, playerAction);
         }
 
-        private void AddNotation(IPiece piece, IMovable movable)
+        private void AddNotation(IPiece piece, IPlayerAction playerAction)
         {
             if (piece.Color == ChessColor.White)
             {
                 int turnNumber = MovesByNotation.Count + 1;
-                MovesByNotation.Add($"{turnNumber}. {CreateAlgebraicNotation(piece, movable)}");
+                MovesByNotation.Add($"{turnNumber}. {CreateAlgebraicNotation(piece, playerAction)}");
             }
             else
             {
                 string incompleteTurn = MovesByNotation.Last();
-                string completeTurn = incompleteTurn + " " + CreateAlgebraicNotation(piece, movable);
+                string completeTurn = incompleteTurn + " " + CreateAlgebraicNotation(piece, playerAction);
 
                 int indexOfIncompleteTurn = MovesByNotation.IndexOf(incompleteTurn);
                 MovesByNotation[indexOfIncompleteTurn] = completeTurn;
             }
         }
 
-        private static string CreateAlgebraicNotation(IPiece piece, IMovable move)
+        private static string CreateAlgebraicNotation(IPiece piece, IPlayerAction move)
         {
             string notation = GetChessPieceUnicode(piece);
 

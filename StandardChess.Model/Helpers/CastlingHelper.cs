@@ -12,7 +12,7 @@ namespace StandardChess.Model.Helpers
         /// </summary>
         /// <param name="move"></param>
         /// <returns></returns>
-        public ChessPosition GetCastlingRookPosition(IMovable move)
+        public ChessPosition GetCastlingRookPosition(IPlayerAction move)
         {
             switch (move.EndingPosition)
             {

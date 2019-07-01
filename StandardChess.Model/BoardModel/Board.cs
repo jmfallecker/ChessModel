@@ -15,7 +15,7 @@
 // along with this program.If not, see<https: //www.gnu.org/licenses/>.
 
 using StandardChess.Infrastructure;
-using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Board;
 using StandardChess.Infrastructure.Movement;
 
 namespace StandardChess.Model.BoardModel
@@ -60,16 +60,16 @@ namespace StandardChess.Model.BoardModel
             return State.Remove(position);
         }
 
-        public void Execute(IMovable movable)
+        public void Execute(IPlayerAction playerAction)
         {
-            if (!IsPositionOccupied(movable.StartingPosition)) return;
+            if (!IsPositionOccupied(playerAction.StartingPosition)) return;
 
-            if (movable is ICapture && !IsPositionOccupied(movable.EndingPosition)) return;
+            if (playerAction is ICapture && !IsPositionOccupied(playerAction.EndingPosition)) return;
 
-            if (!(movable is ICapture) && IsPositionOccupied(movable.EndingPosition)) return;
+            if (!(playerAction is ICapture) && IsPositionOccupied(playerAction.EndingPosition)) return;
 
-            Remove(movable.StartingPosition);
-            Add(movable.EndingPosition);
+            Remove(playerAction.StartingPosition);
+            Add(playerAction.EndingPosition);
         }
 
         #endregion

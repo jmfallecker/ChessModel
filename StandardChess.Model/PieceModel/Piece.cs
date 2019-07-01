@@ -16,7 +16,7 @@
 
 using System;
 using StandardChess.Infrastructure;
-using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Board;
 using StandardChess.Infrastructure.Piece;
 
 namespace StandardChess.Model.PieceModel

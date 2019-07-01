@@ -19,7 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using StandardChess.Infrastructure;
-using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Board;
 
 namespace StandardChess.Model.BoardModel
 {

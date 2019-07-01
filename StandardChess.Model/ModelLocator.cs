@@ -15,7 +15,6 @@
 // along with this program.If not, see<https: //www.gnu.org/licenses/>.
 
 using StandardChess.Infrastructure;
-using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Player;
@@ -28,6 +27,7 @@ using StandardChess.Model.MovementModel;
 using StandardChess.Model.PieceModel;
 using StandardChess.Model.PlayerModel;
 using System.Runtime.CompilerServices;
+using StandardChess.Infrastructure.Board;
 using Unity;
 using Unity.Lifetime;
 

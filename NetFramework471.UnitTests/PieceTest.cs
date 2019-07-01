@@ -18,7 +18,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StandardChess.Infrastructure;
-using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Board;
 using StandardChess.Model.PieceModel;
 
 namespace NetFramework471.UnitTests

@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.If not, see<https: //www.gnu.org/licenses/>.
 
+using StandardChess.Infrastructure.Movement;
+
 namespace StandardChess.Infrastructure.Board
 {
     public interface IBoard
@@ -22,5 +24,6 @@ namespace StandardChess.Infrastructure.Board
         bool IsPositionOccupied(ChessPosition position);
         bool Add(ChessPosition position);
         bool Remove(ChessPosition position);
+        void Execute(IPlayerAction playerAction);
     }
 }

@@ -37,7 +37,7 @@ namespace NetFramework471.UnitTests
             // setup
             IMoveHistory history = ModelLocator.MoveHistory;
             IPiece piece = _chessPieceFactory.CreatePawn(ChessPosition.A2, ChessColor.White);
-            IMovable move = ModelLocator.Move;
+            IPlayerAction move = ModelLocator.Move;
             move.StartingPosition = piece.Location;
             move.EndingPosition = ChessPosition.A4;
 
@@ -46,7 +46,7 @@ namespace NetFramework471.UnitTests
 
             // validate
             IPiece p = history.Moves.First().piece;
-            IMovable m = history.Moves.First().movable;
+            IPlayerAction m = history.Moves.First().movable;
             Assert.AreEqual(1, history.Count);
             Assert.IsTrue(p is IPawn);
             Assert.IsTrue(m.StartingPosition == move.StartingPosition);
@@ -59,12 +59,12 @@ namespace NetFramework471.UnitTests
             // setup
             IMoveHistory history = ModelLocator.MoveHistory;
             IPiece piece1 = _chessPieceFactory.CreatePawn(ChessPosition.A2, ChessColor.White);
-            IMovable move1 = ModelLocator.Move;
+            IPlayerAction move1 = ModelLocator.Move;
             move1.StartingPosition = piece1.Location;
             move1.EndingPosition = ChessPosition.A4;
 
             IPiece piece2 = _chessPieceFactory.CreatePawn(ChessPosition.A7, ChessColor.Black);
-            IMovable move2 = ModelLocator.Move;
+            IPlayerAction move2 = ModelLocator.Move;
             move2.StartingPosition = piece1.Location;
             move2.EndingPosition = ChessPosition.A5;
 
@@ -86,12 +86,12 @@ namespace NetFramework471.UnitTests
             // setup
             IMoveHistory history = ModelLocator.MoveHistory;
             IPiece piece1 = _chessPieceFactory.CreatePawn(ChessPosition.A2, ChessColor.White);
-            IMovable move1 = ModelLocator.Move;
+            IPlayerAction move1 = ModelLocator.Move;
             move1.StartingPosition = piece1.Location;
             move1.EndingPosition = ChessPosition.A4;
 
             IPiece piece2 = _chessPieceFactory.CreatePawn(ChessPosition.A7, ChessColor.Black);
-            IMovable move2 = ModelLocator.Move;
+            IPlayerAction move2 = ModelLocator.Move;
             move2.StartingPosition = piece1.Location;
             move2.EndingPosition = ChessPosition.A5;
 
@@ -114,12 +114,12 @@ namespace NetFramework471.UnitTests
             // setup
             IMoveHistory history = ModelLocator.MoveHistory;
             IPiece piece1 = _chessPieceFactory.CreatePawn(ChessPosition.A2, ChessColor.White);
-            IMovable move1 = ModelLocator.Move;
+            IPlayerAction move1 = ModelLocator.Move;
             move1.StartingPosition = piece1.Location;
             move1.EndingPosition = ChessPosition.A4;
 
             IPiece piece2 = _chessPieceFactory.CreatePawn(ChessPosition.A7, ChessColor.Black);
-            IMovable move2 = ModelLocator.Move;
+            IPlayerAction move2 = ModelLocator.Move;
             move2.StartingPosition = piece1.Location;
             move2.EndingPosition = ChessPosition.A5;
             // execute
@@ -141,7 +141,7 @@ namespace NetFramework471.UnitTests
             // setup
             IMoveHistory history = ModelLocator.MoveHistory;
             IPiece piece1 = _chessPieceFactory.CreatePawn(ChessPosition.A2, ChessColor.White);
-            IMovable move1 = ModelLocator.Move;
+            IPlayerAction move1 = ModelLocator.Move;
             move1.StartingPosition = piece1.Location;
             move1.EndingPosition = ChessPosition.A4;
 
@@ -158,7 +158,7 @@ namespace NetFramework471.UnitTests
             // setup
             IMoveHistory history = ModelLocator.MoveHistory;
             IPiece piece1 = _chessPieceFactory.CreateRook(ChessPosition.A2, ChessColor.White);
-            IMovable move1 = ModelLocator.Move;
+            IPlayerAction move1 = ModelLocator.Move;
             move1.StartingPosition = piece1.Location;
             move1.EndingPosition = ChessPosition.A4;
 

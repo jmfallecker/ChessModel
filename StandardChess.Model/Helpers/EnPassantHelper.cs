@@ -1,5 +1,5 @@
 ﻿using StandardChess.Infrastructure;
-using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Board;
 using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
 using StandardChess.Infrastructure.Utility;

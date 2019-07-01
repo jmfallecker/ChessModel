@@ -17,7 +17,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StandardChess.Infrastructure;
-using StandardChess.Infrastructure.BoardInterfaces;
+using StandardChess.Infrastructure.Board;
 using StandardChess.Model;
 
 namespace NetFramework471.UnitTests

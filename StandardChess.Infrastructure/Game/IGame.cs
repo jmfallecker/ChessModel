@@ -7,6 +7,7 @@ namespace StandardChess.Infrastructure.Game
 {
     public interface IGame
     {
+        bool AttemptMove(IPlayerAction playerAction);
         bool MovePiece(IMove move);
         bool CapturePiece(ICapture capture);
     }

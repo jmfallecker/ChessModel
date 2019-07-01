@@ -3,6 +3,25 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
 	<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+	<Version>1.0.0.1</Version>
+	<Authors>Joseph M Fallecker</Authors>
+	<Description>Fully functioning .Net Standard 2.0 implementation of an engine for the game of Chess.
+
+Features include:
+
+- Dynamically updated board state 
+- Updated game state after every move/capture (Ongoing, Black-in-Check, White-in-Check, Black-Checkmate, White-Checkmate, Stalemate)
+- Player score
+- Pawn promotion
+- En passant
+- Castling
+
+Summary: Create a move or capture object and pass it to the ChessGame.MovePiece or ChessGame.CapturePiece function. Both of these functions will return true or false based on whether the move or capture was legal. If the move or capture was legal, then the game representation will update the board and the game state to reflect the state after having performed the last move or capture.
+
+A method called ChessGame.AttemptMove(IPlayerAction) is also available which will determine if the playerAction is either an IMove or ICapture object, and perform it/update the game as is expected. This method will also return true or false based on the success of the move or capture.</Description>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	<PackageTags>Chess Engine .Net Standard</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

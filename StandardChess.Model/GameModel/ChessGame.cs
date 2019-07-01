@@ -15,7 +15,6 @@
 // along with this program.If not, see<https: //www.gnu.org/licenses/>.
 
 using StandardChess.Infrastructure;
-using StandardChess.Infrastructure.BoardInterfaces;
 using StandardChess.Infrastructure.Game;
 using StandardChess.Infrastructure.Movement;
 using StandardChess.Infrastructure.Piece;
@@ -26,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using StandardChess.Infrastructure.Board;
 
 namespace StandardChess.Model.GameModel
 {
@@ -206,6 +206,18 @@ namespace StandardChess.Model.GameModel
         #endregion
 
         #region Public Methods
+
+        public bool AttemptMove(IPlayerAction playerAction)
+        {
+            switch (playerAction)
+            {
+                case IMove move:
+                    return PerformMoveOrCapture(MakeMove(move));
+                case ICapture capture:
+                    return PerformMoveOrCapture(MakeCapture(capture));
+                default: return false;
+            }
+        }
 
         /// <summary>
         ///     This method is used to move a piece.
@@ -623,7 +635,7 @@ namespace StandardChess.Model.GameModel
         /// <param name="move">King movement</param>
         /// <param name="color">King color</param>
         /// <returns></returns>
-        private IRook GetCastlingRook(IMovable move, ChessColor color)
+        private IRook GetCastlingRook(IPlayerAction move, ChessColor color)
         {
             ChessPosition rookPosition = ModelLocator.CastlingHelper.GetCastlingRookPosition(move);
 
@@ -681,7 +693,7 @@ namespace StandardChess.Model.GameModel
         /// </summary>
         /// <param name="potentialMove">Move to check</param>
         /// <returns></returns>
-        private bool DoesPotentialMoveLeaveKingInCheck(IMovable potentialMove)
+        private bool DoesPotentialMoveLeaveKingInCheck(IPlayerAction potentialMove)
         {
             // create a chess game to pre-check the move before allowing a move in the actual game
             var game = new ChessGame(() => typeof(IQueen))

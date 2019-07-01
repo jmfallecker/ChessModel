@@ -13,7 +13,7 @@ namespace StandardChess.Model.Helpers
         /// </summary>
         /// <param name="potentialMove">Move to check</param>
         /// <returns></returns>
-        public bool DoesPotentialMoveLeaveKingInCheck(IMovable potentialMove, IPiece king, ChessGame copy)
+        public bool DoesPotentialMoveLeaveKingInCheck(IPlayerAction potentialMove, IPiece king, ChessGame copy)
         {
             bool isKingMovingCurrently = king.Location == potentialMove.StartingPosition;
             

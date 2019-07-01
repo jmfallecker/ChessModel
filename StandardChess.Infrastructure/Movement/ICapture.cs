@@ -16,7 +16,7 @@
 
 namespace StandardChess.Infrastructure.Movement
 {
-    public interface ICapture : IMovable
+    public interface ICapture : IPlayerAction
     {
         bool Equals(object obj);
         int GetHashCode();

@@ -16,7 +16,7 @@
 
 namespace StandardChess.Infrastructure.Movement
 {
-    public interface IMovable
+    public interface IPlayerAction
     {
         ChessPosition StartingPosition { get; set; }
         ChessPosition EndingPosition { get; set; }
